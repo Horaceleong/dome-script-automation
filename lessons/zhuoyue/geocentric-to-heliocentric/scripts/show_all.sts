@@ -1,0 +1,481 @@
+require projection_type fisheye version 24.4.0 release professional
+
+# ============================================================
+# 全自動播放：從地心說到日心說（約 15 分鐘）
+# 本檔由 build/build_show_all.py 產生，請改分段腳本後重新產生。
+# ============================================================
+
+
+# ────────────────────────────────────────
+# >>> 00_reset.sts  RESET
+# ────────────────────────────────────────
+
+# ============================================================
+# 第 0 幕｜RESET — 回到已知狀態（亦可單獨用來收拾殘局）
+# ============================================================
+configuration action load name default
+timerate rate 1
+date utc 2026-11-20T11:00:00
+flag track_object off
+zoom fov 90 duration 0
+
+# 收掉先前任何殘留的媒體與字幕
+image action clear
+text action clear
+video action clear
+audio action clear
+deselect
+
+# 觀測地點：香港（22.30N, 114.17E），面向南偏東
+set home_planet Earth
+moveto object Earth lat 22.30 lon 114.17 alt 30m land on heading 170 pitch 35 duration 0
+
+# 乾淨的夜空
+flag landscape off
+flag atmosphere on
+flag stars on
+flag star_twinkle on
+set star_twinkle_amount 0.25
+flag milky_way on
+set milky_way_intensity 0.9
+flag planet_orbits off
+flag planet_names on
+flag constellation_lines on
+flag constellation_names on
+flag star_names on
+flag ecliptic_line on
+flag cardinal_points off
+flag azimuthal_grid off
+color property constellation_lines color 0.28,0.38,0.62,0.6
+color property constellation_names color 0.55,0.68,0.95,0.85
+color property star_names color 0.72,0.78,0.90,0.75
+color property planet_names color 1,0.82,0.55,1.0
+color property ecliptic_line color 0.92,0.72,0.25,0.7
+set label_scale 0.85
+wait duration 1
+
+# ────────────────────────────────────────
+# >>> 01_celestial-sphere.sts  天球
+# ────────────────────────────────────────
+
+# ============================================================
+# 第 1 幕｜天球 — 讓觀眾先「住進」地心說的直覺
+# 從地球看：星空像一個殼，繞著同一個點轉。
+# ============================================================
+
+# 整片天空一起轉：1 秒 ≈ 15 分鐘的模擬時間
+timerate rate 900
+wait duration 16
+timerate rate 1
+
+text action load name t-sphere string "整個星空像一個球殼，繞著同一個點轉" font_size 2.8 coordinate_system dome altitude 14 azimuth 180 color 1,0.93,0.8,1 h_align center v_align center persist on duration 2
+wait duration 9
+text name t-sphere alpha 0 duration 2
+wait duration 2
+
+# 轉到北天極：天球繞著北極星轉
+moveto heading 0 pitch 22.3 duration 6
+wait duration 6
+timerate rate 900
+wait duration 12
+timerate rate 1
+wait duration 3
+
+# ────────────────────────────────────────
+# >>> 02_retrograde.sts  火星逆行
+# ────────────────────────────────────────
+
+# ============================================================
+# 第 2 幕｜火星逆行 — 地心說必須解釋的難題
+# 技巧：以「恆星日」為步長推進，星空保持在原位，
+#       於是只看得到行星相對恒星的移動。
+# ============================================================
+
+# 火星 2027-02-19 衝日前後（逆行約 2026-12-30 至 2027-03-11）
+date utc 2026-12-05T16:00:00
+deselect
+select object Mars pointer off
+flag track_object on
+zoom fov 32 duration 5
+wait duration 5
+
+text action load name t-retro string "盯著火星：它大部分時間向東走，但有兩個多月會倒退" font_size 2.4 coordinate_system dome altitude 12 azimuth 180 color 1,0.93,0.8,1 h_align center v_align center persist on duration 2
+wait duration 8
+text name t-retro alpha 0 duration 2
+
+# ── 每步 2 個恒星日，共 60 步 ≈ 120 天 ──
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+
+# ── 收尾：拉遠看整體 ──
+flag track_object off
+deselect
+zoom fov 85 duration 6
+wait duration 6
+timerate rate 1
+wait duration 3
+
+# ────────────────────────────────────────
+# >>> 03_ptolemy.sts  托勒密的解答
+# ────────────────────────────────────────
+
+# ============================================================
+# 第 3 幕｜托勒密的解答 — 本輪疊在均輪上＋完整的地心宇宙
+# ============================================================
+
+# 把星空調暗，讓示意圖突出
+flag constellation_lines off
+flag constellation_names off
+flag star_names off
+flag milky_way off
+set milky_way_intensity 0.15
+
+image action load name ptolemy filename ../media/01-ptolemy.png alpha 1 coordinate_system dome altitude 42 azimuth 180 scale 48 persist on duration 3
+wait duration 4
+
+text action load name t-ptol1 string "西元 150 年：用「圓套圓」就能算出行星的位置" font_size 2.6 coordinate_system dome altitude 10 azimuth 180 color 1,0.93,0.8,1 h_align center v_align center persist on duration 2
+wait duration 10
+text name t-ptol1 alpha 0 duration 2
+
+text action load name t-ptol2 string "誤差只有 1–2°——這不是愚蠢的模型，是好用的模型" font_size 2.6 coordinate_system dome altitude 10 azimuth 180 color 1,0.93,0.8,1 h_align center v_align center persist on duration 2
+wait duration 10
+text name t-ptol2 alpha 0 duration 2
+
+# ── 換上完整的地心宇宙圖 ──
+image name ptolemy alpha 0 duration 2
+image action load name geo-cosmos filename ../media/07-geocentric-cosmos.png alpha 1 coordinate_system dome altitude 42 azimuth 180 scale 48 persist on duration 3
+wait duration 4
+
+text action load name t-ptol3 string "在托勒密的宇宙裡：月球天到恒星期，一切都繞地球" font_size 2.6 coordinate_system dome altitude 10 azimuth 180 color 1,0.93,0.8,1 h_align center v_align center persist on duration 2
+wait duration 12
+text name t-ptol3 alpha 0 duration 2
+image name geo-cosmos alpha 0 duration 2
+
+# ── 清理自己載入的媒體 ──
+image action drop name ptolemy
+image action drop name geo-cosmos
+wait duration 2
+
+# ────────────────────────────────────────
+# >>> 04_copernicus.sts  哥白尼的翻轉
+# ────────────────────────────────────────
+
+# ============================================================
+# 第 4 幕｜哥白尼的翻轉 — 把太陽放回中心，再飛出去驗證
+# ============================================================
+
+# ── 開場：兩種模型對照 ──
+image action load name two-models filename ../media/08-two-models.png alpha 1 coordinate_system dome altitude 42 azimuth 180 scale 52 persist on duration 3
+wait duration 4
+
+text action load name t-cop0 string "同一片星空，兩套宇宙——差別只在中心放在哪裡" font_size 2.6 coordinate_system dome altitude 10 azimuth 180 color 1,0.93,0.8,1 h_align center v_align center persist on duration 2
+wait duration 13
+text name t-cop0 alpha 0 duration 2
+image name two-models alpha 0 duration 2
+image action drop name two-models
+
+image action load name copernicus filename ../media/02-copernicus.png alpha 1 coordinate_system dome altitude 42 azimuth 180 scale 48 persist on duration 3
+wait duration 4
+
+text action load name t-cop1 string "1543 年：把中心從地球搬到太陽——逆行只是視角的錯覺" font_size 2.6 coordinate_system dome altitude 10 azimuth 180 color 1,0.93,0.8,1 h_align center v_align center persist on duration 2
+wait duration 11
+text name t-cop1 alpha 0 duration 2
+
+# ── 飛出太陽系，直接看軌道 ──
+image name copernicus alpha 0 duration 2
+image action drop name copernicus
+flag atmosphere off
+flag landscape off
+flag constellation_lines off
+flag constellation_names off
+flag star_names off
+flag ecliptic_line off
+flag planet_names on
+flag planet_orbits on
+color property planet_orbits color 0.35,0.55,0.9,0.8
+deselect
+
+# 移動到太陽北極上方約 4 AU，俯視整個行星系統
+moveto object Sun lat 82 alt 4AU look_at on duration 12
+wait duration 12
+zoom fov 55 duration 5
+wait duration 5
+
+# ── 快轉：看地球在內圈超前火星 ──
+date utc 2026-12-10T00:00:00
+timerate rate 400000
+wait duration 30
+timerate rate 1
+
+text action load name t-cop2 string "內圈的地球跑得快，每 780 天從火星旁邊超車一次" font_size 2.6 coordinate_system dome altitude 10 azimuth 180 color 1,0.93,0.8,1 h_align center v_align center persist on duration 2
+wait duration 9
+text name t-cop2 alpha 0 duration 2
+
+# ── 疊加逆行幾何示意圖 ──
+image action load name retro-geo filename ../media/03-retrograde-geometry.png alpha 1 coordinate_system dome altitude 42 azimuth 180 scale 50 persist on duration 3
+wait duration 4
+text action load name t-cop3 string "同一個現象，兩種解釋——日心說只需要「地球超前」一件事" font_size 2.6 coordinate_system dome altitude 10 azimuth 180 color 1,0.93,0.8,1 h_align center v_align center persist on duration 2
+wait duration 12
+image name retro-geo alpha 0 duration 2
+text name t-cop3 alpha 0 duration 2
+image action drop name retro-geo
+
+# ── 當時的人為什麼不買帳：恒星視差 ──
+flag planet_orbits off
+flag planet_names off
+image action load name parallax filename ../media/09-parallax.png alpha 1 coordinate_system dome altitude 42 azimuth 180 scale 52 persist on duration 3
+wait duration 4
+
+text action load name t-cop4 string "最大的反駁：地球在動，為什麼看不到恒星的視差？" font_size 2.6 coordinate_system dome altitude 10 azimuth 180 color 1,0.93,0.8,1 h_align center v_align center persist on duration 2
+wait duration 13
+text name t-cop4 alpha 0 duration 2
+image name parallax alpha 0 duration 2
+image action drop name parallax
+wait duration 2
+
+# ────────────────────────────────────────
+# >>> 05_kepler.sts  開普勒
+# ────────────────────────────────────────
+
+# ============================================================
+# 第 5 幕｜開普勒 — 正圓不夠圓：橢圓與等面積
+# ============================================================
+
+# 從太陽北極上方 1.6 AU 俯視內行星（水星偏心率 0.206，最明顯）
+moveto object Sun lat 80 alt 1.6AU look_at on duration 10
+wait duration 10
+flag planet_orbits on
+flag planet_names on
+color property planet_orbits color 0.35,0.55,0.9,0.8
+zoom fov 60 duration 5
+wait duration 5
+
+select object Mercury pointer on
+zoom fov 45 duration 5
+wait duration 5
+
+text action load name t-k1 string "第谷留下 20 年、精度 1–2 角分的觀測紀錄" font_size 2.6 coordinate_system dome altitude 10 azimuth 180 color 1,0.93,0.8,1 h_align center v_align center persist on duration 2
+wait duration 9
+text name t-k1 alpha 0 duration 2
+
+# ── 快轉幾圈：水星在近日點明顯變快 ──
+timerate rate 2000000
+wait duration 12
+timerate rate 1
+wait duration 1
+
+text action load name t-k2 string "橢圓偏心率只有 0.206，但差 8 角分就得放棄正圓" font_size 2.6 coordinate_system dome altitude 10 azimuth 180 color 1,0.93,0.8,1 h_align center v_align center persist on duration 2
+wait duration 9
+text name t-k2 alpha 0 duration 2
+
+# ── 疊加橢圓與等面積示意圖 ──
+image action load name kepler filename ../media/04-kepler.png alpha 1 coordinate_system dome altitude 42 azimuth 180 scale 50 persist on duration 3
+wait duration 4
+text action load name t-k3 string "同樣的時間，掃過同樣的面積——離太陽近就跑得快" font_size 2.6 coordinate_system dome altitude 10 azimuth 180 color 1,0.93,0.8,1 h_align center v_align center persist on duration 2
+wait duration 12
+image name kepler alpha 0 duration 2
+text name t-k3 alpha 0 duration 2
+image action drop name kepler
+deselect
+wait duration 2
+
+# ────────────────────────────────────────
+# >>> 06_galileo.sts  伽利略的望遠鏡
+# ────────────────────────────────────────
+
+# ============================================================
+# 第 6 幕｜伽利略的望遠鏡 — 木星衛星、金星相位，以及歷史收束
+# ============================================================
+
+deselect
+
+# ── 木星與四大衛星 ──
+select object Jupiter pointer off
+zoom auto in duration 6
+wait duration 6
+timerate rate 30000
+wait duration 16
+timerate rate 1
+
+text action load name t-g1 string "1610 年：四顆小星繞著木星轉——不是所有東西都繞地球" font_size 2.6 coordinate_system dome altitude 10 azimuth 180 color 1,0.93,0.8,1 h_align center v_align center persist on duration 2
+wait duration 10
+text name t-g1 alpha 0 duration 2
+
+# ── 金星相位：回到地球附近 ──
+flag track_object off
+deselect
+moveto object Earth lat 22.30 lon 114.17 alt 60000km land off look_at on duration 10
+wait duration 10
+
+image action load name venus filename ../media/05-venus-phases.png alpha 1 coordinate_system dome altitude 42 azimuth 180 scale 50 persist on duration 3
+wait duration 4
+text action load name t-g2 string "金星有完整相位，而且越細越大——它繞的是太陽" font_size 2.6 coordinate_system dome altitude 10 azimuth 180 color 1,0.93,0.8,1 h_align center v_align center persist on duration 2
+wait duration 12
+image name venus alpha 0 duration 2
+text name t-g2 alpha 0 duration 2
+image action drop name venus
+
+# ── 歷史時間線收束 ──
+image action load name timeline filename ../media/06-timeline.png alpha 1 coordinate_system dome altitude 42 azimuth 180 scale 50 persist on duration 3
+wait duration 4
+text action load name t-g3 string "托勒密 → 哥白尼 → 第谷 → 開普勒 → 伽利略 → 牛頓" font_size 2.6 coordinate_system dome altitude 10 azimuth 180 color 1,0.93,0.8,1 h_align center v_align center persist on duration 2
+wait duration 14
+image name timeline alpha 0 duration 2
+text name t-g3 alpha 0 duration 2
+image action drop name timeline
+wait duration 2
+
+# ────────────────────────────────────────
+# >>> 07_epilogue.sts  尾聲
+# ────────────────────────────────────────
+
+# ============================================================
+# 第 7 幕｜尾聲 — 回到星空：日心也不是終點
+# ============================================================
+
+flag planet_orbits off
+flag planet_names off
+flag milky_way on
+set milky_way_intensity 1.0
+flag star_twinkle on
+
+# 回到香港的夜空
+moveto object Earth lat 22.30 lon 114.17 alt 30m land on heading 180 pitch 30 duration 12
+wait duration 12
+zoom fov 90 duration 5
+wait duration 5
+
+date utc 2026-11-20T13:00:00
+timerate rate 900
+wait duration 14
+timerate rate 1
+
+text action load name t-end1 string "太陽也不是中心——它帶著我們繞銀河系中心轉，2.3 億年一圈" font_size 2.8 coordinate_system dome altitude 14 azimuth 180 color 1,0.93,0.8,1 h_align center v_align center persist on duration 3
+wait duration 13
+text name t-end1 alpha 0 duration 3
+
+text action load name t-end2 string "科學不是換掉一個答案，是換掉一個「問問題的位置」" font_size 2.8 coordinate_system dome altitude 14 azimuth 180 color 1,0.93,0.8,1 h_align center v_align center persist on duration 3
+wait duration 13
+text name t-end2 alpha 0 duration 3
+
+wait duration 3

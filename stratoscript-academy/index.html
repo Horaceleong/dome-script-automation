@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>流動球幕天文館 · 自動播放編寫教學 + StratoScript 產生器</title>
+<style>
+  :root{
+    --bg:#f5f7fa; --card:#ffffff; --ink:#1d2733; --dim:#5b6b7e;
+    --accent:#1a6fb5; --accent2:#0e8a6d; --warn:#b5521a;
+    --border:#dde5ee; --code-bg:#0f1826; --code-ink:#dbe6f5;
+    --chip:#e8f0fa;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Microsoft JhengHei","PingFang TC",sans-serif;background:var(--bg);color:var(--ink);line-height:1.75}
+  header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.95);backdrop-filter:blur(6px);border-bottom:1px solid var(--border)}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+  nav{display:flex;flex-wrap:wrap;gap:4px;padding:8px 0}
+  nav a{text-decoration:none;color:var(--dim);font-size:.86rem;padding:5px 10px;border-radius:16px;white-space:nowrap}
+  nav a:hover{background:var(--chip);color:var(--accent)}
+  nav a.brand{font-weight:bold;color:var(--accent);font-size:.95rem;margin-right:8px}
+  section{padding:38px 0 14px}
+  h1{font-size:1.7rem;margin:.2em 0}
+  h2{font-size:1.35rem;border-left:5px solid var(--accent);padding-left:.55em;margin:0 0 .6em}
+  h3{font-size:1.05rem;margin:1.4em 0 .5em;color:var(--accent)}
+  p{margin:.6em 0}
+  .lead{color:var(--dim)}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 22px;margin:14px 0;box-shadow:0 1px 3px rgba(20,40,70,.05)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+  @media(max-width:880px){.grid2,.grid3{grid-template-columns:1fr}}
+  pre{background:var(--code-bg);color:var(--code-ink);padding:14px 16px;border-radius:10px;overflow:auto;font-family:Consolas,Menlo,monospace;font-size:.86rem;line-height:1.55}
+  pre .c{color:#7d95b5}   /* comment */
+  pre .k{color:#7fc7ff}   /* command */
+  pre .s{color:#ffd487}   /* string */
+  pre .n{color:#a5e8b0}   /* number */
+  code.inline{background:#eef2f7;border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-family:Consolas,monospace;font-size:.88em}
+  table{border-collapse:collapse;width:100%;font-size:.9rem;margin:10px 0}
+  th,td{border:1px solid var(--border);padding:7px 10px;text-align:left;vertical-align:top}
+  th{background:#eef3f9}
+  .tag{display:inline-block;background:var(--chip);color:var(--accent);border-radius:5px;padding:1px 8px;font-size:.8rem;margin-right:6px}
+  .tip{border-left:4px solid var(--accent2);background:#f0faf6;padding:10px 16px;border-radius:0 10px 10px 0;margin:12px 0}
+  .warn{border-left:4px solid var(--warn);background:#fdf5ef;padding:10px 16px;border-radius:0 10px 10px 0;margin:12px 0}
+  .cmd-card{border:1px solid var(--border);border-radius:10px;margin:12px 0;overflow:hidden}
+  .cmd-card>summary{cursor:pointer;padding:11px 16px;background:#f2f6fb;font-weight:bold;font-family:Consolas,monospace}
+  .cmd-card>summary .desc{font-family:inherit;font-weight:normal;color:var(--dim);font-size:.88rem;margin-left:10px}
+  .cmd-body{padding:4px 18px 14px}
+  /* ---------- generator ---------- */
+  #gen{scroll-margin-top:70px}
+  .gen-layout{display:grid;grid-template-columns:230px 1fr 1fr;gap:14px;align-items:start}
+  @media(max-width:1080px){.gen-layout{grid-template-columns:1fr}}
+  .palette h4{margin:10px 0 6px;font-size:.85rem;color:var(--dim)}
+  .palette button{display:block;width:100%;text-align:left;margin:4px 0;padding:7px 11px;border:1px solid var(--border);background:#fff;border-radius:8px;cursor:pointer;font-family:Consolas,monospace;font-size:.83rem}
+  .palette button:hover{background:var(--chip);border-color:var(--accent)}
+  .step{border:1px solid var(--border);border-radius:10px;background:#fff;margin:8px 0;padding:10px 12px}
+  .step .head{display:flex;align-items:center;gap:8px}
+  .step .head b{font-family:Consolas,monospace;color:var(--accent)}
+  .step .head .btns{margin-left:auto;display:flex;gap:4px}
+  .step .head button{border:1px solid var(--border);background:#f7f9fc;border-radius:6px;cursor:pointer;font-size:.8rem;padding:2px 8px}
+  .step .fields{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+  .field{display:flex;flex-direction:column;font-size:.78rem;color:var(--dim)}
+  .field input,.field select{padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-size:.85rem;min-width:110px;background:#fff;color:var(--ink)}
+  .field input:focus,.field select:focus{outline:2px solid var(--chip);border-color:var(--accent)}
+  .gen-out pre{min-height:220px;max-height:560px}
+  .btn{display:inline-block;border:none;border-radius:8px;padding:8px 16px;cursor:pointer;font-size:.9rem;margin:2px 6px 2px 0;background:var(--accent);color:#fff}
+  .btn.secondary{background:#eef2f7;color:var(--ink);border:1px solid var(--border)}
+  .btn.green{background:var(--accent2)}
+  .btn:hover{filter:brightness(1.08)}
+  .empty{color:var(--dim);text-align:center;padding:30px 0}
+  footer{color:var(--dim);font-size:.82rem;text-align:center;padding:30px 0 40px}
+  .toc-num{display:inline-block;width:1.6em;color:var(--accent);font-weight:bold}
+</style>
+</head>
+<body>
+
+<header><div class="wrap"><nav>
+  <a class="brand">球幕自動化學堂</a>
+  <a href="#overview">① 系統總覽</a>
+  <a href="#quickstart">② 快速上手</a>
+  <a href="#structure">③ 檔案結構</a>
+  <a href="#syntax">④ 語法基礎</a>
+  <a href="#types">⑤ 參數型別</a>
+  <a href="#commands">⑥ 指令大全</a>
+  <a href="#media">⑦ 球幕媒體</a>
+  <a href="#lesson">⑧ 教學頁 HTML</a>
+  <a href="#method">⑧+ 設計方法</a>
+  <a href="#pitfalls">⑨ 常見錯誤</a>
+  <a href="#generator">⑩ 腳本產生器</a>
+  <a href="#example">⑪ 實戰範例</a>
+</nav></div></header>
+
+<div class="wrap">
+
+<!-- ============ ① 總覽 ============ -->
+<section id="overview">
+  <h1>流動球幕天文館 · 自動播放編寫教學</h1>
+  <p class="lead">本頁依 Digitalis《StratoScript 24.4 Reference》（Nightshade G3）、《StratoScript 21.7 Reference》（NG）與《How to Create Augmented Lessons》三份官方文件整理，並附上一個可以邊點邊學的 <b>StratoScript 腳本產生器</b>。全部內容離線可用。</p>
+
+  <div class="card">
+    <h3 style="margin-top:0">一個流動球幕系統由三層組成</h3>
+    <table>
+      <tr><th>層</th><th>是什麼</th><th>你寫什麼</th></tr>
+      <tr><td><b>硬體</b></td><td>Digitarium 流動球幕（半球投影、魚眼鏡頭、音響、cove 燈）</td><td>—</td></tr>
+      <tr><td><b>模擬軟體</b></td><td><b>Nightshade</b>（G3 / NG），即星空模擬引擎，有太陽系天體、恆星、星座、深空天體資料</td><td><code class="inline">.sts</code> 腳本（StratoScript）</td></tr>
+      <tr><td><b>操作介面</b></td><td><b>Universal Console</b>（平板/遙控網頁控制台）</td><td><b>Augmented Lesson</b> 教學頁（<code class="inline">index.html</code>）</td></tr>
+    </table>
+    <p><b>「自動播放」= 兩種東西：</b></p>
+    <p>1️⃣ <b>StratoScript（.sts）</b>——一行的指令依序執行：改日期、快轉時間、飛到木星、疊圖、播音樂……腳本跑完自動停。</p>
+    <p>2️⃣ <b>Augmented Lesson</b>——一個簡單 HTML 頁面，顯示在控制台上：左邊旁白給講者看，右邊按鈕/縮圖一點就播放腳本或把圖投上穹頂。適合「講到哪、點到哪」的互動教學。</p>
+  </div>
+
+  <div class="tip"><b>版本注意：</b>G3（24.4）新增了 cascading 設定（<code class="inline">set</code> 的 TAXON_ATTRIBUTE）等能力；NG（21.7）腳本大部分可直接在 G3 播。要寫「兩台都跑得動」的腳本，避開 G3 專屬分類學 <code class="inline">set</code> 寫法即可。</div>
+</section>
+
+<!-- ============ ② 快速上手 ============ -->
+<section id="quickstart">
+  <h2>② 快速上手：五分鐘寫出第一支腳本</h2>
+  <div class="card">
+    <p>目標：傍晚的香港夜空 → 快轉看星星轉動 → 縮時軌跡。把下面內容存成 <code class="inline">my_first_show.sts</code>（<b>UTF-8</b> 編碼）：</p>
+<pre><span class="c"># 我的第一支球幕腳本</span>
+<span class="k">require</span> projection_type fisheye version <span class="n">21.1.1</span> release professional
+
+<span class="c"># 場景歸零：乾淨的夜空</span>
+<span class="k">clear</span> state natural
+<span class="k">flag</span> atmosphere off
+<span class="k">flag</span> cardinal_points off
+<span class="k">date</span> local <span class="s">2026-11-06 20:00:00</span>
+<span class="k">moveto</span> lat <span class="n">22.3</span> lon <span class="n">114.17</span> duration <span class="n">5</span>
+<span class="k">wait</span> duration <span class="n">5</span>
+
+<span class="c"># 快轉：每秒 = 15 分鐘模擬時間，看星空轉 2 分鐘</span>
+<span class="k">timerate</span> rate <span class="n">900</span>
+<span class="k">wait</span> duration <span class="n">120</span>
+<span class="k">timerate</span> rate <span class="n">1</span></pre>
+    <p><b>三個關鍵觀念立刻記住：</b></p>
+    <p>1️⃣ <code class="inline">wait</code> 是心跳——沒有 <code class="inline">wait</code>，前面所有動畫會被下一行指令立刻打斷，觀眾什麼都看不到。</p>
+    <p>2️⃣ 凡是帶 <code class="inline">duration</code> 的動畫指令（moveto／flyto／date／zoom…），後面幾乎都要跟一支 <code class="inline">wait duration ≥ 動畫秒數</code>。</p>
+    <p>3️⃣ 第一行用 <code class="inline">require</code> 聲明需要的投影模式與最低版本，播放器與操作員都會知道這支腳本的前提。</p>
+  </div>
+</section>
+
+<!-- ============ ③ 檔案結構 ============ -->
+<section id="structure">
+  <h2>③ 檔案結構與部署</h2>
+  <div class="card">
+<pre>lessons/
+└── 你的出版社名稱/              ← PUBLISHER（建議用自己獨一無二的名字）
+    └── my_lesson/               ← 每個課程一個資料夾
+        ├── index.html          ← 教學頁（互動課程必備）
+        ├── scripts/            ← .sts 腳本（慣例）
+        │   ├── 01_intro.sts
+        │   └── show_all.sts
+        ├── media/              ← 投上穹頂的完整媒體檔（慣例）
+        │   └── diagram.png
+        └── thumbs/             ← 縮圖，給控制台頁面顯示（慣例）
+            └── diagram.png</pre>
+    <p><b>部署流程：</b>把 <code class="inline">lessons/</code> 放到媒體母碟 → 同步到 Digitarium 主機內建硬碟 → Universal Console 的 Lessons 頁籤就會出現你的課程。</p>
+    <div class="warn"><b>打包規範：</b>發佈 zip 的頂層必須是 <code class="inline">lessons/PUBLISHER/LESSON/</code>。路徑<b>區分大小寫</b>（<code class="inline">cat.jpg</code> ≠ <code class="inline">Cat.jpg</code>），腳本裡的路徑一律相對於「腳本自己所在目錄」，上一層用 <code class="inline">../</code>。</div>
+  </div>
+</section>
+
+<!-- ============ ④ 語法基礎 ============ -->
+<section id="syntax">
+  <h2>④ StratoScript 語法基礎</h2>
+  <div class="card">
+    <h3 style="margin-top:0">一行一指令，參數成對</h3>
+<pre><span class="k">COMMAND</span> ARG1 VALUE1 ARG2 VALUE2 ...
+<span class="k">select</span> object Jupiter          <span class="c"># 選中木星</span>
+<span class="k">flag</span> atmosphere on             <span class="c"># 開大氣</span>
+<span class="k">date</span> utc <span class="s">1999-08-11T12:00:00</span>  <span class="c"># 跳到指定時刻</span></pre>
+    <table>
+      <tr><th>規則</th><th>說明</th></tr>
+      <tr><td>一行 = 一指令</td><td>以換行結尾。字串值內要換行用 <code class="inline">\n</code>；長指令可用行尾 <code class="inline">\</code> 續行</td></tr>
+      <tr><td>空白是分隔符</td><td>值含空白必須加雙引號：<code class="inline">"This is a value."</code>；值內的引號用 <code class="inline">\"</code></td></tr>
+      <tr><td>指令／參數名不分大小寫</td><td><code class="inline">FLAG</code> = <code class="inline">flag</code>；但<b>參數值區分大小寫</b>（<code class="inline">on</code> ≠ <code class="inline">ON</code> 的物件名、天體名都要對準）</td></tr>
+      <tr><td>參數對順序自由</td><td><code class="inline">moveto lat 22 lon 114 duration 5</code> 與 <code class="inline">moveto duration 5 lon 114 lat 22</code> 等價</td></tr>
+      <tr><td>註解</td><td><code class="inline">#</code> 起頭到行尾被忽略；要顯示 # 本身用 <code class="inline">\#</code></td></tr>
+      <tr><td>編碼</td><td>檔案存 <b>UTF-8</b>，副檔名 <code class="inline">.sts</code></td></tr>
+      <tr><td>必要參數要一次給齊</td><td>同一行內給完，不能分兩行補</td></tr>
+    </table>
+    <div class="tip"><b>好習慣：</b>① 開頭寫 <code class="inline">require</code>；② 每幕開頭 <code class="inline">clear state natural</code> 或重設 flag，避免上一幕殘留；③ 結尾把時間速率、flag 復原，方便連播下一支。</div>
+  </div>
+</section>
+
+<!-- ============ ⑤ 型別 ============ -->
+<section id="types">
+  <h2>⑤ 標準參數型別（看懂文件的前提）</h2>
+  <div class="card">
+    <table>
+      <tr><th>型別</th><th>意義</th><th>例子</th></tr>
+      <tr><td><code class="inline">DATE_TIME</code></td><td>ISO8601 日期時間，可只給日期或只給時間</td><td><code class="inline">1918-11-11</code>、<code class="inline">20:30:00</code>、<code class="inline">-200-03-22T13:33:00</code></td></tr>
+      <tr><td><code class="inline">DISTANCE</code></td><td>數字＋可選單位（預設公尺）</td><td><code class="inline">1au</code>、<code class="inline">10km</code>、<code class="inline">50%</code>（當前距離的百分比）</td></tr>
+      <tr><td><code class="inline">FADER</code></td><td>0～1 的滑桿值（透明度、音量等）</td><td><code class="inline">0</code> 全透明／靜音，<code class="inline">1</code> 全開</td></tr>
+      <tr><td><code class="inline">RGB(A)</code></td><td>三（四）個 0~1 值</td><td><code class="inline">1,0.5,0</code>、<code class="inline">"0.33,0.2,0.9,0.3"</code></td></tr>
+      <tr><td><code class="inline">SECONDS</code></td><td>秒（可小數）</td><td><code class="inline">2.5</code></td></tr>
+      <tr><td><code class="inline">ON_OFF</code></td><td><code class="inline">on</code>/<code class="inline">1</code> 或 <code class="inline">off</code>/<code class="inline">0</code>；<code class="inline">toggle</code> 反轉</td><td><code class="inline">flag stars off</code></td></tr>
+      <tr><td><code class="inline">DEGREES</code></td><td>十進位角度</td><td><code class="inline">22.3</code>、<code class="inline">-540.23</code></td></tr>
+      <tr><td><code class="inline">RIGHT_ASCENSION / DECLINATION</code></td><td>赤經時分秒／赤緯度分秒</td><td><code class="inline">12h5m4.5s</code>、<code class="inline">-9d4m3.2s</code></td></tr>
+    </table>
+    <h3>座標系（COORDINATE_SYSTEM）——媒體定位的核心</h3>
+    <table>
+      <tr><th>座標系</th><th>參數 A</th><th>參數 B</th><th>什麼時候用</th></tr>
+      <tr><td><code class="inline">dome</code></td><td>altitude</td><td>azimuth</td><td><b>疊圖／字幕首選</b>。固定於球幕（跟著焦點方位），不被鏡頭移動影響</td></tr>
+      <tr><td><code class="inline">viewport</code></td><td>xpos</td><td>ypos</td><td>魚眼全畫面媒體：配 <code class="inline">scale fill</code> 就是「fulldome」投法</td></tr>
+      <tr><td><code class="inline">horizontal</code></td><td>altitude</td><td>azimuth</td><td>360° 全景照／影片：配 <code class="inline">scale 360</code> 可環景環繞</td></tr>
+      <tr><td><code class="inline">equatorial / j2000</code></td><td>ra</td><td>dec</td><td>把媒體釘在天球某個天區（隨星空轉動）</td></tr>
+      <tr><td><code class="inline">geocentric</code></td><td>lat</td><td>lon</td><td>貼在天體表面</td></tr>
+      <tr><td><code class="inline">galactic</code></td><td>ra</td><td>dec</td><td>銀道座標的天區</td></tr>
+    </table>
+    <div class="tip"><b>dome 座標的方位角</b>以「焦點方位的反方向」為 0° 逆時針計——多半劇場把觀眾席主視線設在焦點上，所以旁白區大約在 <code class="inline">azimuth 180</code>，這也是把示意圖放「觀眾正前方」最常用的值。</div>
+  </div>
+</section>
+
+<!-- ============ ⑥ 指令大全 ============ -->
+<section id="commands">
+  <h2>⑥ 指令大全（G3 24.4 · 兼容 NG 21.7）</h2>
+  <p class="lead">依用途分組。點開看用法，右側標 ✦ 的可以直接丟進下方產生器。</p>
+
+  <h3>鋪場與狀態</h3>
+  <details class="cmd-card"><summary>require <span class="desc">聲明播放需求——建議永遠當腳本第一行 ✦</span></summary><div class="cmd-body">
+<pre><span class="k">require</span> projection_type fisheye version <span class="n">21.1.1</span> release professional</pre>
+    <p><code class="inline">projection_type</code>：fisheye / perspective。<code class="inline">release</code>：basic / community / professional（basic 只能在太陽系內移動）。不給 version 會被當成舊版行為（moveto 沒有緩入緩出）。</p></div></details>
+
+  <details class="cmd-card"><summary>clear <span class="desc">一鍵清場，回到乾淨夜空 ✦</span></summary><div class="cmd-body">
+<pre><span class="k">clear</span> state natural   <span class="c"># 關掉所有線條標籤、開行星恆星、回到初始視野</span></pre>
+    <p>每幕開頭先清場，等於「重設按鈕」；比逐個 flag off 省事且不易漏。</p></div></details>
+
+  <details class="cmd-card"><summary>flag <span class="desc">開關單一顯示項目 ✦</span></summary><div class="cmd-body">
+<pre><span class="k">flag</span> constellation_lines on     <span class="c"># 星座連線</span>
+<span class="k">flag</span> atmosphere off             <span class="c"># 關大氣（離開地球看行星系必備）</span>
+<span class="k">flag</span> planet_orbits on           <span class="c"># 行星軌道線</span>
+<span class="k">flag</span> time_lapse on              <span class="c"># 縮時軌跡（星流、日行跡）</span>
+<span class="k">flag</span> cardinal_points off        <span class="c"># 東南西北方位點</span></pre>
+    <p>常用旗標：<code class="inline">stars</code>、<code class="inline">star_names</code>、<code class="inline">constellation_art/names/boundaries</code>、<code class="inline">planet_names</code>、<code class="inline">planet_orbits</code>、<code class="inline">ecliptic_line</code>、<code class="inline">equator_line</code>、<code class="inline">milky_way→sky</code>、<code class="inline">landscape</code>、<code class="inline">clouds</code>、<code class="inline">moon_scaled</code>、<code class="inline">track_object</code>、<code class="inline">show_tui_datetime</code>、<code class="inline">script_gui_debug</code>（除錯）。值可用 <code class="inline">toggle</code> 反轉。</p></div></details>
+
+  <details class="cmd-card"><summary>set <span class="desc">細部設定：標籤大小、文化、時區、太陽月亮尺度…✦</span></summary><div class="cmd-body">
+<pre><span class="k">set</span> label_scale <span class="n">0.75</span>                <span class="c"># 標籤縮小</span>
+<span class="k">set</span> home_planet <span class="s">"Solar System Observer"</span>  <span class="c"># 觀測點搬到太陽系俯瞰點</span>
+<span class="k">set</span> sky_culture chinese             <span class="c"># 中國星空文化（三垣二十八宿）</span>
+<span class="k">set</span> sky_locale zh_HK                <span class="c"># 天區標籤用繁體中文</span>
+<span class="k">set</span> moon_scale <span class="n">4</span>                   <span class="c"># 月亮放大 4 倍（配 flag moon_scaled）</span>
+<span class="k">set</span> time_zone <span class="s">Asia/Hong_Kong</span>
+<span class="c"># G3 專屬：cascading 分類學屬性</span>
+<span class="k">set</span> planetary.planets.orbit_color <span class="s">1,0,0,1</span> duration <span class="n">5</span></pre></div></details>
+
+  <details class="cmd-card"><summary>color <span class="desc">改線條顏色</span></summary><div class="cmd-body">
+<pre><span class="k">color</span> property planet_orbits color <span class="s">1,1,0</span>
+<span class="k">color</span> property constellation_lines color <span class="s">"0.5,0.7,1,0.6"</span></pre>
+    <p>property 可用：constellation_lines / constellation_art / ecliptic_line / equator_line / planet_orbits / azimuthal_grid / equatorial_grid / cardinal_points …</p></div></details>
+
+  <h3>時間與日期</h3>
+  <details class="cmd-card"><summary>date <span class="desc">跳日期時間；sidereal 步進是行星教學的殺手級用法 ✦</span></summary><div class="cmd-body">
+<pre><span class="k">date</span> local <span class="s">2026-11-06 20:00:00</span>
+<span class="k">date</span> utc <span class="s">1999-08-11T12:00:00</span>
+<span class="k">date</span> load current relative <span class="n">7</span>          <span class="c"># 一週後的現在</span>
+<span class="k">date</span> relative <span class="n">365</span> duration <span class="n">30</span> steps <span class="n">365</span>  <span class="c"># 一年一天一步 → 日行跡</span>
+<span class="k">date</span> sidereal <span class="n">2</span>                        <span class="c"># 前進 2 個恆星日：星空不動、行星移動</span></pre>
+    <p><code class="inline">duration</code>＝動畫秒數；<code class="inline">steps</code>＝改用等步進而非平滑插值。<b>恆星日步進</b>是演示「行星相對星空移動（順行/逆行）」的標準手法。</p></div></details>
+
+  <details class="cmd-card"><summary>timerate <span class="desc">時間流速：1＝正常，900＝每實秒 15 分鐘 ✦</span></summary><div class="cmd-body">
+<pre><span class="k">timerate</span> rate <span class="n">900</span>
+<span class="k">wait</span> duration <span class="n">60</span>
+<span class="k">timerate</span> rate <span class="n">1</span>          <span class="c"># 一定要記得調回來</span>
+<span class="k">timerate</span> action pause    <span class="c"># 時間凍結</span></pre></div></details>
+
+  <h3>攝影機與移動</h3>
+  <details class="cmd-card"><summary>moveto <span class="desc">在原地/換天體移動落點與視線 ✦</span></summary><div class="cmd-body">
+<pre><span class="k">moveto</span> lat <span class="n">22.3</span> lon <span class="n">114.17</span> duration <span class="n">5</span>
+<span class="k">moveto</span> object Sun lat <span class="n">82</span> alt <span class="n">4AU</span> look_at on duration <span class="n">10</span>   <span class="c"># 飛到太陽北極上方俯瞰</span></pre>
+    <p>參數：lat / lon / alt / heading / pitch / roll / land / look_at / object / duration。可中途換錨定天體（object）；<code class="inline">look_at on</code> 會看向錨定天體。⚠ 兩個 moveto 重疊時後者打斷前者。</p></div></details>
+
+  <details class="cmd-card"><summary>flyto <span class="desc">直線飛到某天體附近 ✦</span></summary><div class="cmd-body">
+<pre><span class="k">flyto</span> object Mars alt <span class="n">10km</span> duration <span class="n">20</span>
+<span class="k">wait</span> duration <span class="n">20</span></pre>
+    <p><code class="inline">anchor</code>：geosync（預設，定在對方經緯度上空）/ follow（跟著天體但相對星空固定，可看它自轉）。飛到後該天體自動被選中。</p></div></details>
+
+  <details class="cmd-card"><summary>zoom <span class="desc">變焦望遠鏡；auto in 一鍵看衛星系統 ✦</span></summary><div class="cmd-body">
+<pre><span class="k">select</span> object Jupiter
+<span class="k">zoom</span> auto in             <span class="c"># 自動框住木星＋衛星系統</span>
+<span class="k">wait</span> duration <span class="n">15</span>
+<span class="k">zoom</span> fov <span class="n">60</span> duration <span class="n">5</span>  <span class="c"># 手動設視野角</span>
+<span class="k">zoom</span> auto initial       <span class="c"># 回到初始視野</span></pre></div></details>
+
+  <h3>選中與焦點</h3>
+  <details class="cmd-card"><summary>select / deselect <span class="desc">選天體、星座、恆星、深空天體 ✦</span></summary><div class="cmd-body">
+<pre><span class="k">select</span> object Mars pointer off     <span class="c"># pointer off 不畫高亮圈</span>
+<span class="k">select</span> constellation ORI           <span class="c"># 獵戶座（連線+範圍）</span>
+<span class="k">select</span> nebula M31                  <span class="c"># 仙女座星系（M/NGC/IC 編號）</span>
+<span class="k">select</span> hp <span class="n">80737</span>                    <span class="c"># 用 Hipparcos 編號選亮星（織女一）</span>
+<span class="k">deselect</span>                           <span class="c"># 取消選中</span></pre></div></details>
+
+  <h3>穹頂媒體</h3>
+  <details class="cmd-card"><summary>image <span class="desc">疊圖：示意圖、標題卡、 fulldome 圖 ✦</span></summary><div class="cmd-body">
+<pre><span class="c"># dome 座標疊示意圖（漸顯 2 秒）</span>
+<span class="k">image</span> action load name diagram filename media/diagram.png alpha <span class="n">1</span> \
+  coordinate_system dome altitude <span class="n">45</span> azimuth <span class="n">180</span> scale <span class="n">55</span> duration <span class="n">2</span>
+<span class="k">wait</span> duration <span class="n">20</span>
+<span class="c"># fulldome 全幅圖</span>
+<span class="k">image</span> action load name fd filename dome.png alpha <span class="n">1</span> coordinate_system viewport scale fill
+<span class="c"># 360 環景</span>
+<span class="k">image</span> action load name pano filename pano.jpg alpha <span class="n">1</span> coordinate_system horizontal scale <span class="n">360</span>
+<span class="c"># 用完就丟，保持效能</span>
+<span class="k">image</span> action drop name diagram</pre>
+    <p>重點：<b>預設 alpha 0（全透明）</b>，必須給 <code class="inline">alpha</code>；透明背景用 PNG；<code class="inline">persist on</code> 讓圖在腳本結束後留著；<code class="inline">rotation</code> 順時針轉圖。</p></div></details>
+
+  <details class="cmd-card"><summary>text <span class="desc">穹頂字幕（實驗性）✦</span></summary><div class="cmd-body">
+<pre><span class="k">text</span> action load name title string <span class="s">"從地心到日心"</span> font_size <span class="n">8</span> \
+  coordinate_system dome altitude <span class="n">40</span> azimuth <span class="n">180</span> alpha <span class="n">0</span>
+<span class="k">text</span> name title alpha <span class="n">1</span> duration <span class="n">2</span>     <span class="c"># 漸顯</span>
+<span class="k">wait</span> duration <span class="n">6</span>
+<span class="k">text</span> name title alpha <span class="n">0</span> duration <span class="n">2</span>     <span class="c"># 漸隱</span></pre>
+    <p>字串支援 <code class="inline">&lt;b&gt;&lt;i&gt;&lt;sup&gt;&lt;sub&gt;</code> 標記與 <code class="inline">\n</code> 換行；<code class="inline">font_size</code> 是「字高約幾度」；載入後只有位置、旋轉、alpha 可改。</p></div></details>
+
+  <details class="cmd-card"><summary>audio / video <span class="desc">音訊與影片 ✦</span></summary><div class="cmd-body">
+<pre><span class="k">audio</span> action play filename music.ogg name intro volume <span class="n">0.8</span>
+<span class="k">wait</span> duration <span class="n">20</span>
+<span class="k">audio</span> action drop name intro
+
+<span class="k">video</span> action play name film filename intro.mpg alpha <span class="n">1</span> coordinate_system viewport scale fill
+<span class="k">wait</span> duration <span class="n">15</span>
+<span class="k">video</span> action stop name film</pre>
+    <div class="warn">腳本<b>結束或被停止時，它啟動的音訊/影片會跟著停</b>——旁白音軌要覆蓋整段就在同一支腳本裡播完。高解析影片（2k×1k 以上）需用 vdec 外掛編碼。</div></div></details>
+
+  <details class="cmd-card"><summary>landscape / meteors / cove_lights <span class="desc">地景、流星雨、穹緣燈</span></summary><div class="cmd-body">
+<pre><span class="k">landscape</span> action load name HK body Earth type spherical texture hk.png top_altitude <span class="n">25</span>
+<span class="k">meteors</span> zhr <span class="n">10000</span> ra <span class="n">30</span> dec <span class="n">80</span>       <span class="c"># 流星暴（輻射點 J2000）</span>
+<span class="k">cove_lights</span> color <span class="s">1,0,1,1</span> duration <span class="n">15</span>  <span class="c"># 穹緣燈漸變到洋紅</span></pre></div></details>
+
+  <h3>進階（依需要再學）</h3>
+  <details class="cmd-card"><summary>body <span class="desc">自訂天體：小行星、彗星、人造衛星</span></summary><div class="cmd-body">
+    <p>用軌道根數（半長軸、離心率、傾角…）新增太陽系天體，可掛 3D 模型與貼圖。長指令、參數多，建議從官方範例改。</p></div></details>
+  <details class="cmd-card"><summary>layer / point_cloud <span class="desc">資料圖層與點雲</span></summary><div class="cmd-body">
+<pre><span class="k">layer</span> name sea reference_frame Earth action load url imagery/sea.TIFF
+<span class="k">point_cloud</span> action load name sdss filename galaxies.tsv coordinate_system j2000</pre></div></details>
+  <details class="cmd-card"><summary>script / configuration / sky_culture <span class="desc">腳本串接與系統</span></summary><div class="cmd-body">
+<pre><span class="k">script</span> action play filename part2.sts   <span class="c"># 跳到下一支（本支結束）</span>
+<span class="k">script</span> action pause                     <span class="c"># 暫停等講者按播放</span>
+<span class="k">configuration</span> action save name myshow   <span class="c"># 存/載設定檔</span>
+<span class="k">sky_culture</span> action load path MyCulture  <span class="c"># 載入自訂星空文化</span></pre></div></details>
+</section>
+
+<!-- ============ ⑦ 球幕媒體 ============ -->
+<section id="media">
+  <h2>⑦ 球幕媒體製作要點</h2>
+  <div class="card">
+    <h3 style="margin-top:0">投影的真相：半球曲面</h3>
+    <p>穹頂是半球面，播放器把平面媒體經 <b>dome warp</b> 貼到球面上。所以你只需要準備平面母版，<b>不用自己做魚眼變形</b>；但構圖要按「最終會被貼在哪裡」來設計：</p>
+    <table>
+      <tr><th>媒體類型</th><th>母版規格</th><th>播放方式</th></tr>
+      <tr><td><b>示意圖／字幕卡</b>（疊在星空上）</td><td><b>16:9（1920×1080）</b>或正方形皆可，<b>透明背景 PNG</b>，內容放在中央安全區</td><td><code class="inline">coordinate_system dome</code> + <code class="inline">scale</code>（最大角尺寸，度），放 <code class="inline">azimuth 180 altitude 45</code> 面向觀眾</td></tr>
+      <tr><td><b>Fulldome 全幅</b></td><td>正圓魚眼構圖（1:1 方形畫布、圓形內容）</td><td><code class="inline">coordinate_system viewport scale fill</code></td></tr>
+      <tr><td><b>360° 環景</b></td><td>2:1 等距圓柱投影</td><td><code class="inline">coordinate_system horizontal scale 360</code></td></tr>
+      <tr><td><b>縮圖</b></td><td>256×256 或 320×180</td><td>只給控制台頁面用，放 <code class="inline">thumbs/</code></td></tr>
+    </table>
+    <div class="tip"><b>對比度與過曝：</b>球幕亮度低，純白會刺眼、純黑會「破洞」。底色用深藍（如 #050810）80% 透明度疊在星空上，文字用暖白（#f4f1e8）。</div>
+    <div class="warn"><b>字要夠大：</b>字高在穹頂上至少 2~3° 才可讀；示意圖正文約 12pt 相對 1080p 高度才安全。座位區兩側的畫面會被壓縮，重要內容不要放極邊緣。</div>
+  </div>
+</section>
+
+<!-- ============ ⑧ 教學頁 HTML ============ -->
+<section id="lesson">
+  <h2>⑧ Augmented Lesson 教學頁製作</h2>
+  <div class="card">
+    <p class="lead">教學頁會顯示在 Universal Console 上：<code class="inline">div.narration</code> 的旁白在左（給講者看）<code class="inline">div.action</code> 的互動元素在右（一點就播）。<b>控制台會停用外部 CSS 與 JS</b>，所以只能用內建 class 與 inline style，保持簡單。</p>
+<pre><span class="k">&lt;html&gt;</span>&lt;body&gt;
+<span class="c"># 必要的 4 個 meta：課程索引就靠它們</span>
+&lt;meta name=<span class="s">"category"</span> content=<span class="s">"你的出版社"</span>&gt;
+&lt;meta name=<span class="s">"pagename"</span> content=<span class="s">"從地心到日心"</span>&gt;
+&lt;meta name=<span class="s">"rating"</span>   content=<span class="s">"9+"</span>&gt;
+&lt;meta name=<span class="s">"language"</span> content=<span class="s">"zh_HK"</span>&gt;
+
+&lt;h2&gt;第一幕：住進地心說&lt;/h2&gt;
+&lt;div class=<span class="s">"narration"</span>&gt;
+  &lt;p&gt;旁白：先讓觀眾感受古人看到的星空……&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=<span class="s">"action"</span>&gt;
+  <span class="c"># 按鈕：執行一支腳本</span>
+  &lt;div class=<span class="s">"effect"</span> data-type=<span class="s">"script"</span> data-value=<span class="s">"scripts/01_intro.sts"</span>
+       data-transport=<span class="s">"false"</span>&gt;播放：天球旋轉&lt;/div&gt;
+  <span class="c"># 按鈕：執行單條指令</span>
+  &lt;div class=<span class="s">"effect"</span> data-type=<span class="s">"command"</span> data-value=<span class="s">"timerate rate 900"</span>&gt;快轉時間&lt;/div&gt;
+  <span class="c"># 縮圖：點了把 media/ 的完整圖投上穹頂</span>
+  &lt;img src=<span class="s">"thumbs/diagram.png"</span> data-type=<span class="s">"image"</span> data-value=<span class="s">"media/diagram.png"</span> title=<span class="s">"示意圖"</span>&gt;
+&lt;/div&gt;
+&lt;/body&gt;&lt;/html&gt;</pre>
+    <table>
+      <tr><th>class</th><th>效果</th></tr>
+      <tr><td><code class="inline">narration</code></td><td>旁白文字（螢幕左側）</td></tr>
+      <tr><td><code class="inline">action</code></td><td>互動區（紅框、右側）</td></tr>
+      <tr><td><code class="inline">effect</code></td><td>把 div 變成按鈕（需配 data-type/data-value）</td></tr>
+      <tr><td><code class="inline">uc-collapsible</code></td><td>可折疊區塊（內需有 &lt;h2&gt; 當標題）；加 <code class="inline">ancillary</code> 預設收起</td></tr>
+    </table>
+    <p><b>data-type</b> 可用：<code class="inline">command</code>（單條指令）/<code class="inline">script</code>（整支腳本）/<code class="inline">image</code>/<code class="inline">video</code>/<code class="inline">audio</code>。媒體類型的 data-value 填相對路徑，可用 data-coordinate_system、data-xpos、data-ypos、data-scale、data-rotation、data-clone 指定穹頂位置。<code class="inline">data-transport="false"</code> 隱藏播放器控制條。圖片建議附 <code class="inline">data-author</code>、<code class="inline">data-license</code>、<code class="inline">data-link</code> 註明出處授權。</p>
+    <div class="tip">下方產生器有「互動元素片段」分頁，填表即可產生這些 HTML。</div>
+  </div>
+</section>
+
+<!-- ============ ⑧+ 設計方法 ============ -->
+<section id="method">
+  <h2>⑧+ 教學腳本設計方法論</h2>
+  <div class="card">
+    <h3 style="margin-top:0">單幕黃金結構（約 60–90 秒）</h3>
+<pre><span class="c"># ── 幕開始：清場 ──</span>
+<span class="k">clear</span> state natural
+<span class="k">flag</span> ...（這一幕需要的）
+<span class="c"># ── 鉤子：先給現象 ──</span>
+...現象動畫 + wait
+<span class="c"># ── 解釋：疊示意圖/字幕 ──</span>
+<span class="k">image</span> action load ... alpha <span class="n">0</span>
+<span class="k">image</span> name ... alpha <span class="n">1</span> duration <span class="n">2</span>
+<span class="k">wait</span> duration <span class="n">20</span>
+<span class="c"># ── 幕結束：自己清自己 ──</span>
+<span class="k">image</span> action drop name ...
+<span class="k">text</span> action drop name ...</pre>
+    <ul>
+      <li><b>每幕自己清自己</b>：誰 load 的媒體誰 drop。這樣任意跳幕播不會殘影。</li>
+      <li><b>先現象後原理</b>：先讓觀眾「看到怪事」（行星倒退），再給解釋模型。</li>
+      <li><b>節奏</b>：一張圖停 15–25 秒；旁白語速約每秒 4 字，對稿配 wait。</li>
+      <li><b>總控腳本</b>：把各幕 .sts 合成一支 <code class="inline">show_all.sts</code> 全自動播放；分段腳本則給互動教學用。同一內容兩種形態。</li>
+      <li><b>誠實教學</b>：模型近似處明說（「圖中視差角大幅誇大」），觀眾信任感反而更高。</li>
+    </ul>
+    <h3>上線前檢查清單</h3>
+    <p>☐ 所有 duration 後面都有對應的 wait　☐ 圖片都設了 alpha　☐ 時間速率最後調回 1　☐ 路徑大小寫與副檔名核對　☐ 在目標播放器同投影模式下實機跑一遍　☐ 字幕/圖在最後一排座位可讀　☐ 授權資訊標齊</p>
+  </div>
+</section>
+
+<!-- ============ ⑨ 常見錯誤 ============ -->
+<section id="pitfalls">
+  <h2>⑨ 常見錯誤與排解</h2>
+  <div class="card">
+    <table>
+      <tr><th>症狀</th><th>原因</th></tr>
+      <tr><td>畫面一閃而過，什麼都沒看到</td><td>動畫指令後沒有 <code class="inline">wait</code>；或下一行指令把動畫打斷</td></tr>
+      <tr><td>圖片載入後完全看不到</td><td>image 預設 <b>alpha 0（全透明）</b>——要給 <code class="inline">alpha 1</code></td></tr>
+      <tr><td>找不到檔案</td><td>路徑區分大小寫；路徑相對於<b>腳本</b>而非課程根目錄；上一層要 <code class="inline">../</code></td></tr>
+      <tr><td>旁白音樂突然斷掉</td><td>腳本結束/被停會殺掉它啟動的音訊；長音軌要放在同一支腳本內播完</td></tr>
+      <tr><td>moveto / date 動畫亂跳</td><td>兩個同類動畫指令時間重疊，後者打斷前者；拉開 wait</td></tr>
+      <tr><td>moveto 沒有緩入緩出</td><td>腳本缺 <code class="inline">require ... version</code>，被當成舊版行為</td></tr>
+      <tr><td>圖釘在星空上到處跑（或不動）</td><td>座標系選錯：<code class="inline">dome</code> 固定於劇場、<code class="inline">equatorial</code> 跟星空轉、<code class="inline">viewport</code> 是魚眼全畫面</td></tr>
+      <tr><td>腳本行為在新舊機器不一致</td><td>G3 專屬寫法在 NG 不支援；要雙機兼容就避開 cascading <code class="inline">set</code> 與新參數</td></tr>
+      <tr><td>中文變亂碼</td><td>檔案不是 UTF-8；「另存為 UTF-8」即可（text 指令對字型的支援依系統，實機測）</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ============ ⑩ 產生器 ============ -->
+<section id="generator">
+  <h2>⑩ StratoScript 腳本產生器</h2>
+  <p class="lead">左邊點指令 → 中間填參數、調順序 → 右邊即時產生 .sts，可複製或下載。不用背語法，產生的每一行都符合 24.4 規範。</p>
+  <div class="gen-layout">
+    <div class="card palette" id="palette" style="padding:12px 14px"></div>
+    <div class="card" style="padding:12px 14px">
+      <div id="steps"><div class="empty">按左側指令加入步驟</div></div>
+    </div>
+    <div class="card gen-out" style="padding:12px 14px">
+      <div>
+        <button class="btn green" onclick="copyOut()">📋 複製腳本</button>
+        <button class="btn" onclick="downloadSts()">⬇ 下載 .sts</button>
+        <button class="btn secondary" onclick="loadDemo()">載入示範腳本</button>
+        <button class="btn secondary" onclick="clearSteps()">清空</button>
+      </div>
+      <pre id="out" style="margin-top:10px"></pre>
+      <div style="margin-top:10px">
+        <label style="font-size:.85rem;color:var(--dim)">檔名：<input id="fname" value="my_show.sts" style="padding:4px 8px;border:1px solid var(--border);border-radius:6px;width:200px"></label>
+      </div>
+    </div>
+  </div>
+
+  <h3>互動元素片段產生器（給 Augmented Lesson 的 index.html）</h3>
+  <div class="card" id="snippet">
+    <div class="fields" style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end">
+      <div class="field"><label>data-type</label>
+        <select id="sn-type" onchange="snGen()">
+          <option value="command">command（單條指令）</option>
+          <option value="script">script（整支腳本）</option>
+          <option value="image">image（圖片投穹頂）</option>
+          <option value="video">video（影片）</option>
+          <option value="audio">audio（音訊）</option>
+        </select></div>
+      <div class="field"><label>data-value（指令或路徑）</label><input id="sn-value" style="min-width:260px" oninput="snGen()"></div>
+      <div class="field"><label>顯示文字 / title</label><input id="sn-label" oninput="snGen()"></div>
+      <div class="field"><label>縮圖 src（媒體類建議填）</label><input id="sn-thumb" oninput="snGen()"></div>
+      <div class="field"><label>data-transport</label>
+        <select id="sn-transport" onchange="snGen()"><option value="">顯示控制條</option><option value="false">false（隱藏）</option></select></div>
+    </div>
+    <pre id="sn-out" style="margin-top:12px">&lt;!-- 填上面的欄位 --&gt;</pre>
+    <button class="btn green" onclick="snCopy()">📋 複製片段</button>
+  </div>
+</section>
+
+<!-- ============ ⑪ 實戰範例 ============ -->
+<section id="example">
+  <h2>⑪ 實戰範例：《從地心到日心》課程節錄</h2>
+  <div class="card">
+    <p class="lead">示範「先現象、後原理、每幕自清」的完整寫法（節錄自本工作區實際課程包）。</p>
+<pre><span class="c"># ============ 第 2 幕：火星逆行 ============</span>
+<span class="k">clear</span> state natural
+<span class="k">flag</span> planet_orbits on
+<span class="k">flag</span> planet_names on
+<span class="k">date</span> local <span class="s">2027-01-25 21:00:00</span>
+<span class="k">moveto</span> lat <span class="n">22.3</span> lon <span class="n">114.17</span> duration <span class="n">5</span>
+<span class="k">wait</span> duration <span class="n">5</span>
+
+<span class="c"># 恆星日步進：星空凍結、只有行星在動</span>
+<span class="k">date</span> sidereal <span class="n">2</span>
+<span class="k">wait</span> duration <span class="n">1</span>
+<span class="c"># ……重複 60 次（火星走完逆行弧）……</span>
+
+<span class="c"># 疊示意圖解釋</span>
+<span class="k">image</span> action load name retro filename media/03-retrograde-geometry.png alpha <span class="n">0</span> \
+  coordinate_system dome altitude <span class="n">45</span> azimuth <span class="n">180</span> scale <span class="n">55</span>
+<span class="k">image</span> name retro alpha <span class="n">1</span> duration <span class="n">2</span>
+<span class="k">text</span> action load name t-r2 string <span class="s">"地球超車火星——倒退只是視線錯覺"</span> font_size <span class="n">3.2</span> \
+  coordinate_system dome altitude <span class="n">12</span> azimuth <span class="n">180</span> alpha <span class="n">0</span>
+<span class="k">text</span> name t-r2 alpha <span class="n">1</span> duration <span class="n">2</span>
+<span class="k">wait</span> duration <span class="n">25</span>
+
+<span class="c"># 自己清自己</span>
+<span class="k">image</span> name retro alpha <span class="n">0</span> duration <span class="n">2</span>
+<span class="k">text</span> name t-r2 alpha <span class="n">0</span> duration <span class="n">2</span>
+<span class="k">wait</span> duration <span class="n">2</span>
+<span class="k">image</span> action drop name retro
+<span class="k">text</span> action drop name t-r2</pre>
+    <p>完整課程包（9 支分段腳本 + show_all 全場 + 9 張 16:9 示意圖 + 教學頁）見同工作區 <code class="inline">lessons/zhuoyue/geocentric-to-heliocentric/</code>。</p>
+  </div>
+</section>
+
+<footer>依 Digitalis Education《StratoScript 24.4 / 21.7 Reference》與《How to Create Augmented Lessons》整理 · 供流動球幕教學使用 · Nightshade、StratoScript、Digitarium 為 Digitalis Education Solutions, Inc. 商標</footer>
+</div>
+
+<script>
+/* ==================================================================
+   產生器：指令 schema
+   field: {arg, label, type:'text'|'num'|'select', options, def, hint, wide}
+   ================================================================== */
+const ONOFF = ["on","off","toggle"];
+const CMDS = [
+ {id:"comment", cat:"控制", label:"# 註解", cmd:null,
+  fields:[{arg:"text", label:"註解內容", type:"text", wide:true, def:"── 幕標題 ──"}]},
+ {id:"require", cat:"控制", label:"require", cmd:"require",
+  fields:[{arg:"projection_type", label:"投影模式", type:"select", options:["fisheye","perspective"], def:"fisheye"},
+          {arg:"version", label:"最低版本", type:"text", def:"21.1.1", hint:"如 24.1.1"},
+          {arg:"release", label:"版本級別", type:"select", options:["professional","basic","community"], def:"professional"}]},
+ {id:"clear", cat:"控制", label:"clear（清場）", cmd:"clear",
+  fields:[{arg:"state", label:"state", type:"select", options:["natural"], def:"natural"}]},
+ {id:"flag", cat:"狀態", label:"flag", cmd:"flag", special:"flag",
+  fields:[{arg:"name", label:"旗標名", type:"select", options:["atmosphere","cardinal_points","clouds","constellation_art","constellation_boundaries","constellation_lines","constellation_names","ecliptic_line","equator_line","equatorial_grid","galactic_grid","landscape","light_pollution","milky_way","moon_scaled","nebula_names","planet_names","planet_orbits","precession_circle","sky","star_names","stars","time_lapse","track_object","show_tui_datetime","script_gui_debug"], def:"constellation_lines"},
+          {arg:"value", label:"值", type:"select", options:ONOFF, def:"on"}]},
+ {id:"set", cat:"狀態", label:"set", cmd:"set",
+  fields:[{arg:"attr", label:"設定項", type:"select", options:["label_scale","home_planet","sky_culture","sky_locale","moon_scale","time_zone","milky_way_intensity","star_limiting_magnitude","gamma","line_width","saturation","light_exposure"], def:"label_scale"},
+          {arg:"value", label:"值", type:"text", def:"0.75", wide:true, hint:"數字或字串；G3 亦可用 taxon.attribute"},
+          {arg:"duration", label:"duration(秒)", type:"num", def:""}]},
+ {id:"color", cat:"狀態", label:"color property", cmd:"color",
+  fields:[{arg:"property", label:"property", type:"select", options:["planet_orbits","constellation_lines","constellation_art","ecliptic_line","equator_line","azimuthal_grid","equatorial_grid","cardinal_points","constellation_names","planet_names"], def:"planet_orbits"},
+          {arg:"color", label:"RGB(A)", type:"text", def:"1,1,0"}]},
+ {id:"date", cat:"時間", label:"date", cmd:"date", special:"date",
+  fields:[{arg:"mode", label:"模式", type:"select", options:[["utc","utc 指定時刻"],["local","local 當地時刻"],["relative","relative 前進天數"],["sidereal","sidereal 恆星日"],["load","load current 現在"]], def:"utc"},
+          {arg:"value", label:"日期/天數", type:"text", def:"2026-11-06 20:00:00", wide:true},
+          {arg:"duration", label:"duration(秒)", type:"num", def:""},
+          {arg:"steps", label:"steps(步數)", type:"num", def:"", hint:"等步進動畫"}]},
+ {id:"timerate", cat:"時間", label:"timerate", cmd:"timerate", special:"timerate",
+  fields:[{arg:"mode", label:"模式", type:"select", options:[["rate","rate 流速"],["pause","pause 暫停"]], def:"rate"},
+          {arg:"rate", label:"rate(秒/秒)", type:"num", def:"900", hint:"1=正常 900=每實秒15分"}]},
+ {id:"wait", cat:"時間", label:"wait", cmd:"wait", special:"wait",
+  fields:[{arg:"mode", label:"模式", type:"select", options:[["duration","duration 等幾秒"],["until","until 等到腳本第幾秒"]], def:"duration"},
+          {arg:"value", label:"秒數", type:"num", def:"5"}]},
+ {id:"moveto", cat:"攝影機", label:"moveto", cmd:"moveto",
+  fields:[{arg:"object", label:"object(換天體)", type:"text", def:"", hint:"留空=原天體"},
+          {arg:"lat", label:"lat", type:"num", def:"22.3"},
+          {arg:"lon", label:"lon", type:"num", def:"114.17"},
+          {arg:"alt", label:"alt", type:"text", def:"", hint:"如 10km / 4AU / 50%"},
+          {arg:"heading", label:"heading", type:"num", def:""},
+          {arg:"pitch", label:"pitch", type:"num", def:""},
+          {arg:"look_at", label:"look_at", type:"select", options:["","on","off"], def:""},
+          {arg:"land", label:"land", type:"select", options:["","on","off"], def:""},
+          {arg:"duration", label:"duration(秒)", type:"num", def:"5"}]},
+ {id:"flyto", cat:"攝影機", label:"flyto", cmd:"flyto",
+  fields:[{arg:"object", label:"object", type:"text", def:"Mars"},
+          {arg:"alt", label:"alt", type:"text", def:"10km"},
+          {arg:"anchor", label:"anchor", type:"select", options:["","geosync","follow"], def:""},
+          {arg:"duration", label:"duration(秒)", type:"num", def:"20"}]},
+ {id:"zoom", cat:"攝影機", label:"zoom", cmd:"zoom", special:"zoom",
+  fields:[{arg:"mode", label:"模式", type:"select", options:[["fov","fov 指定視野角"],["auto_in","auto in 框住天體/衛星系"],["auto_out","auto out 逐步拉遠"],["auto_initial","auto initial 回初始視野"]], def:"fov"},
+          {arg:"fov", label:"fov(度)", type:"num", def:"60"},
+          {arg:"duration", label:"duration(秒)", type:"num", def:"5"}]},
+ {id:"select", cat:"攝影機", label:"select", cmd:"select", special:"select",
+  fields:[{arg:"kind", label:"對象類型", type:"select", options:[["object","object 天體"],["constellation","constellation 星座(3碼)"],["nebula","nebula M/NGC/IC"],["hp","hp Hipparcos編號"]], def:"object"},
+          {arg:"value", label:"名稱/編號", type:"text", def:"Mars"},
+          {arg:"pointer", label:"pointer", type:"select", options:["on","off"], def:"on"}]},
+ {id:"deselect", cat:"攝影機", label:"deselect", cmd:"deselect", fields:[]},
+ {id:"image", cat:"媒體", label:"image", cmd:"image", special:"image",
+  fields:[{arg:"action", label:"action", type:"select", options:["load","drop","clear"], def:"load"},
+          {arg:"name", label:"name", type:"text", def:"diagram"},
+          {arg:"filename", label:"filename", type:"text", def:"media/diagram.png", wide:true},
+          {arg:"alpha", label:"alpha", type:"num", def:"1", hint:"預設0=全透明!"},
+          {arg:"coordinate_system", label:"座標系", type:"select", options:["dome","viewport","horizontal","equatorial","j2000","galactic","geocentric"], def:"dome"},
+          {arg:"altitude", label:"altitude(度)", type:"num", def:"45"},
+          {arg:"azimuth", label:"azimuth(度)", type:"num", def:"180"},
+          {arg:"scale", label:"scale(度或fill)", type:"text", def:"55"},
+          {arg:"rotation", label:"rotation(度)", type:"num", def:""},
+          {arg:"persist", label:"persist", type:"select", options:["","on","off"], def:""},
+          {arg:"duration", label:"duration(秒)", type:"num", def:"2"}]},
+ {id:"text", cat:"媒體", label:"text", cmd:"text", special:"text",
+  fields:[{arg:"action", label:"action", type:"select", options:["load","drop","clear"], def:"load"},
+          {arg:"name", label:"name", type:"text", def:"title"},
+          {arg:"string", label:"string", type:"text", wide:true, def:"字幕文字"},
+          {arg:"font_size", label:"font_size(度)", type:"num", def:"3.5"},
+          {arg:"color", label:"RGB(A)", type:"text", def:""},
+          {arg:"coordinate_system", label:"座標系", type:"select", options:["dome","viewport","equatorial","j2000"], def:"dome"},
+          {arg:"altitude", label:"altitude(度)", type:"num", def:"12"},
+          {arg:"azimuth", label:"azimuth(度)", type:"num", def:"180"},
+          {arg:"alpha", label:"alpha", type:"num", def:"1"},
+          {arg:"h_align", label:"h_align", type:"select", options:["","center","left","right"], def:""},
+          {arg:"duration", label:"duration(秒)", type:"num", def:"2"}]},
+ {id:"audio", cat:"媒體", label:"audio", cmd:"audio", special:"audio",
+  fields:[{arg:"action", label:"action", type:"select", options:["play","pause","resume","drop","clear"], def:"play"},
+          {arg:"filename", label:"filename", type:"text", def:"media/narration.ogg", wide:true},
+          {arg:"name", label:"name", type:"text", def:"intro"},
+          {arg:"volume", label:"volume", type:"num", def:"0.8"},
+          {arg:"loop", label:"loop", type:"select", options:["","on","off"], def:""}]},
+ {id:"video", cat:"媒體", label:"video", cmd:"video", special:"video",
+  fields:[{arg:"action", label:"action", type:"select", options:["play","stop","pause","resume","drop","clear"], def:"play"},
+          {arg:"filename", label:"filename", type:"text", def:"media/clip.mp4", wide:true},
+          {arg:"name", label:"name", type:"text", def:"film"},
+          {arg:"alpha", label:"alpha", type:"num", def:"1"},
+          {arg:"coordinate_system", label:"座標系", type:"select", options:["viewport","dome","horizontal"], def:"viewport"},
+          {arg:"scale", label:"scale(或fill)", type:"text", def:"fill"},
+          {arg:"loop", label:"loop", type:"select", options:["","on","off"], def:""}]},
+ {id:"meteors", cat:"媒體", label:"meteors", cmd:"meteors",
+  fields:[{arg:"zhr", label:"zhr(顆/時)", type:"num", def:"100"},
+          {arg:"ra", label:"ra(度)", type:"num", def:"30"},
+          {arg:"dec", label:"dec(度)", type:"num", def:"80"}]},
+ {id:"cove_lights", cat:"媒體", label:"cove_lights", cmd:"cove_lights",
+  fields:[{arg:"color", label:"RGBW", type:"text", def:"1,0,1,1"},
+          {arg:"duration", label:"duration(秒)", type:"num", def:"15"}]},
+ {id:"script", cat:"控制", label:"script（串接）", cmd:"script", special:"script",
+  fields:[{arg:"mode", label:"模式", type:"select", options:[["play","play 播下一支"],["pause","pause 暫停"],["end","end 結束"]], def:"play"},
+          {arg:"filename", label:"filename", type:"text", def:"part2.sts"}]},
+];
+const CATS = ["控制","狀態","時間","攝影機","媒體"];
+
+let steps = [];  // {id, cmdId, values{}}
+let uid = 0;
+
+function renderPalette(){
+  const el = document.getElementById("palette");
+  el.innerHTML = "<h4>指令面板</h4>" + CATS.map(c =>
+    "<h4>"+c+"</h4>" + CMDS.filter(d=>d.cat===c).map(d=>
+      `<button onclick="addStep('${d.id}')">${d.label}</button>`).join("")
+  ).join("");
+}
+
+function addStep(id){
+  const d = CMDS.find(c=>c.id===id);
+  const values = {};
+  d.fields.forEach(f=>values[f.arg]=f.def||"");
+  steps.push({id:++uid, cmdId:id, values});
+  render();
+}
+function addWaitAfter(i, sec){
+  const w = CMDS.find(c=>c.id==="wait");
+  steps.splice(i+1,0,{id:++uid, cmdId:"wait", values:{mode:"duration", value:String(sec||5)}});
+  render();
+}
+function delStep(i){ steps.splice(i,1); render(); }
+function dupStep(i){ steps.splice(i+1,0,JSON.parse(JSON.stringify(steps[i]))); steps[i+1].id=++uid; render(); }
+function moveStep(i,dir){
+  const j=i+dir; if(j<0||j>=steps.length)return;
+  [steps[i],steps[j]]=[steps[j],steps[i]]; render();
+}
+function clearSteps(){ steps=[]; render(); }
+function loadDemo(){
+  const S = (cmdId,vals)=>({id:++uid, cmdId, values:Object.assign(
+    {}, Object.fromEntries(CMDS.find(c=>c.id===cmdId).fields.map(f=>[f.arg,f.def||""])), vals)});
+  steps = [
+    S("comment",{text:"── 示範腳本：香港夜空快轉 ──"}),
+    S("require",{}),
+    S("clear",{state:"natural"}),
+    S("flag",{name:"atmosphere",value:"off"}),
+    S("date",{mode:"local",value:"2026-11-06 20:00:00"}),
+    S("moveto",{duration:"5"}),
+    S("wait",{mode:"duration",value:"5"}),
+    S("timerate",{rate:"900"}),
+    S("wait",{mode:"duration",value:"60"}),
+    S("timerate",{rate:"1"}),
+    S("comment",{text:"── 疊一張示意圖 ──"}),
+    S("image",{name:"diagram",filename:"media/diagram.png"}),
+    S("wait",{mode:"duration",value:"20"}),
+    S("image",{action:"drop",name:"diagram",filename:"",alpha:"",coordinate_system:"",altitude:"",azimuth:"",scale:"",duration:""}),
+  ];
+  render();
+}
+
+function fieldHtml(step, f, i){
+  const v = step.values[f.arg] ?? "";
+  const attrs = `onchange="setVal(${i},'${f.arg}',this.value)"`;
+  let input;
+  if(f.type==="select"){
+    const opts = f.options.map(o=>{
+      const val = Array.isArray(o)?o[0]:o, lab = Array.isArray(o)?o[1]:o;
+      if(val==="" ) return `<option value="">（不使用）</option>`;
+      return `<option value="${val}" ${val===v?"selected":""}>${lab}</option>`;
+    }).join("");
+    input = `<select ${attrs}>${opts}</select>`;
+  }else{
+    input = `<input type="${f.type==="num"?"number":"text"}" step="any" value="${String(v).replace(/"/g,"&quot;")}" ${attrs}>`;
+  }
+  return `<div class="field" ${f.wide?'style="flex:1;min-width:220px"':""}><label>${f.label}${f.hint?" · "+f.hint:""}</label>${input}</div>`;
+}
+
+function setVal(i,arg,v){ steps[i].values[arg]=v; renderOut(); }
+
+function buildLine(step){
+  const d = CMDS.find(c=>c.id===step.cmdId);
+  const v = step.values;
+  const q = s => /\s/.test(s) ? `"${s}"` : s;
+  switch(d.special){
+    case "flag":
+      return `flag ${v.name} ${v.value}`;
+    case "date":{
+      const mode=v.mode;
+      if(mode==="load") return "date load current"+(v.value?` relative ${v.value}`:"")+(v.duration?` duration ${v.duration}`:"")+(v.steps?` steps ${v.steps}`:"");
+      let line="date "+mode;
+      if(v.value) line+=" "+q(v.value);
+      if(v.duration) line+=` duration ${v.duration}`;
+      if(v.steps) line+=` steps ${v.steps}`;
+      return line;}
+    case "wait":
+      return `wait ${v.mode} ${v.value||0}`;
+    case "timerate":
+      return v.mode==="pause" ? "timerate action pause" : `timerate rate ${v.rate||1}`;
+    case "zoom":
+      if(v.mode==="fov") return `zoom fov ${v.fov||60}`+(v.duration?` duration ${v.duration}`:"");
+      return "zoom "+(v.mode==="auto_in"?"auto in":v.mode==="auto_out"?"auto out":"auto initial");
+    case "select":
+      return `select ${v.kind} ${v.value}`+(v.pointer?` pointer ${v.pointer}`:"");
+    case "script":
+      return v.mode==="play" ? `script action play filename ${v.filename}` :
+             v.mode==="pause" ? "script action pause" : "script action end";
+    case "audio":{
+      if(v.action==="play")
+        return `audio action play`+(v.filename?` filename ${q(v.filename)}`:"")+(v.name?` name ${v.name}`:"")+
+               (v.volume?` volume ${v.volume}`:"")+(v.loop?` loop ${v.loop}`:"");
+      return `audio action ${v.action}`+(v.name?` name ${v.name}`:"");}
+    case "video":{
+      if(v.action==="play")
+        return `video action play`+(v.filename?` filename ${q(v.filename)}`:"")+(v.name?` name ${v.name}`:"")+
+               (v.alpha?` alpha ${v.alpha}`:"")+(v.coordinate_system?` coordinate_system ${v.coordinate_system}`:"")+
+               (v.scale?` scale ${v.scale}`:"")+(v.loop?` loop ${v.loop}`:"");
+      return `video action ${v.action}`+(v.name?` name ${v.name}`:"");}
+    case "image":{
+      if(v.action==="load")
+        return `image action load`+(v.name?` name ${v.name}`:"")+(v.filename?` filename ${q(v.filename)}`:"")+
+               (v.alpha!==""?` alpha ${v.alpha}`:"")+(v.coordinate_system?` coordinate_system ${v.coordinate_system}`:"")+
+               (v.coordinate_system==="dome"||v.coordinate_system==="horizontal"?
+                 (v.altitude!==""?` altitude ${v.altitude}`:"")+(v.azimuth!==""?` azimuth ${v.azimuth}`:""):
+                 (v.coordinate_system==="viewport"?(v.scale?` scale ${v.scale}`:""):""))+
+               (v.scale&&v.coordinate_system!=="viewport"?` scale ${v.scale}`:"")+
+               (v.rotation!==""?` rotation ${v.rotation}`:"")+(v.persist?` persist ${v.persist}`:"")+
+               (v.duration!==""?` duration ${v.duration}`:"");
+      return `image action ${v.action}`+(v.name?` name ${v.name}`:"");}
+    case "text":{
+      if(v.action==="load")
+        return `text action load`+(v.name?` name ${v.name}`:"")+(v.string?` string ${q(v.string)}`:"")+
+               (v.font_size?` font_size ${v.font_size}`:"")+(v.color?` color ${v.color}`:"")+
+               (v.coordinate_system?` coordinate_system ${v.coordinate_system}`:"")+
+               (v.altitude!==""?` altitude ${v.altitude}`:"")+(v.azimuth!==""?` azimuth ${v.azimuth}`:"")+
+               (v.alpha!==""?` alpha ${v.alpha}`:"")+(v.h_align?` h_align ${v.h_align}`:"")+
+               (v.duration!==""?` duration ${v.duration}`:"");
+      return `text action ${v.action}`+(v.name?` name ${v.name}`:"");}
+    default:{
+      if(step.cmdId==="comment") return "# "+(v.text||"");
+      let line=d.cmd;
+      d.fields.forEach(f=>{
+        const val=v[f.arg];
+        if(val!==""&&val!==undefined&&!(f.arg==="state"&&step.cmdId!=="clear"))
+          line+=` ${f.arg} ${q(String(val))}`;
+      });
+      return line;}
+  }
+}
+
+function render(){
+  const el=document.getElementById("steps");
+  if(!steps.length){el.innerHTML='<div class="empty">按左側指令加入步驟</div>';renderOut();return;}
+  el.innerHTML = steps.map((s,i)=>{
+    const d=CMDS.find(c=>c.id===s.cmdId);
+    const dur = d.special==="wait" ? s.values.value : (d.fields.find(f=>f.arg==="duration")||{}).def&&s.values.duration;
+    return `<div class="step">
+      <div class="head"><span class="toc-num">${i+1}</span><b>${d.label}</b>
+        <div class="btns">
+          ${dur?`<button onclick="addWaitAfter(${i},${dur})" title="在後面插入對應 wait">＋wait ${dur}s</button>`:""}
+          <button onclick="moveStep(${i},-1)">↑</button>
+          <button onclick="moveStep(${i},1)">↓</button>
+          <button onclick="dupStep(${i})">⧉</button>
+          <button onclick="delStep(${i})">✕</button>
+        </div></div>
+      ${d.fields.length?`<div class="fields">${d.fields.map(f=>fieldHtml(s,f,i)).join("")}</div>`:""}
+    </div>`;
+  }).join("");
+  renderOut();
+}
+
+function renderOut(){
+  const lines = steps.map(s=>buildLine(s));
+  document.getElementById("out").textContent = lines.length ? lines.join("\n") : "（空的腳本）";
+}
+function copyOut(){
+  navigator.clipboard.writeText(document.getElementById("out").textContent)
+    .then(()=>alert("已複製到剪貼簿"));
+}
+function downloadSts(){
+  const name=(document.getElementById("fname").value||"my_show.sts").replace(/[^\w.-]/g,"_");
+  const blob=new Blob(["\ufeff"+document.getElementById("out").textContent],{type:"text/plain;charset=utf-8"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob); a.download=name; a.click();
+}
+
+/* ---------- 片段產生器 ---------- */
+function snGen(){
+  const t=document.getElementById("sn-type").value;
+  const val=document.getElementById("sn-value").value||"...";
+  const lab=document.getElementById("sn-label").value||"按鈕文字";
+  const thumb=document.getElementById("sn-thumb").value;
+  const tr=document.getElementById("sn-transport").value;
+  const trAttr = tr?` data-transport="${tr}"`:"";
+  let html;
+  if(t==="command"||t==="script"){
+    html=`<div class="action">
+  <div class="effect" data-type="${t}" data-value="${val}"${trAttr}>${lab}</div>
+</div>`;
+  }else{
+    const inner = thumb
+      ? `  <img src="${thumb}" data-type="${t}" data-value="${val}" title="${lab}"${trAttr}>`
+      : `  <div class="effect" data-type="${t}" data-value="${val}" title="${lab}"${trAttr}>${lab}</div>`;
+    html=`<div class="action">\n${inner}\n</div>`;
+  }
+  document.getElementById("sn-out").textContent=html;
+}
+function snCopy(){
+  navigator.clipboard.writeText(document.getElementById("sn-out").textContent)
+    .then(()=>alert("片段已複製"));
+}
+
+renderPalette(); render(); snGen();
+</script>
+</body>
+</html>

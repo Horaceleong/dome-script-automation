@@ -1,0 +1,74 @@
+require projection_type fisheye version 24.4.0 release professional
+
+# ============================================================
+# 第 4 幕｜哥白尼的翻轉 — 把太陽放回中心，再飛出去驗證
+# ============================================================
+
+# ── 開場：兩種模型對照 ──
+image action load name two-models filename ../media/08-two-models.png alpha 1 coordinate_system dome altitude 42 azimuth 180 scale 52 persist on duration 3
+wait duration 4
+
+text action load name t-cop0 string "同一片星空，兩套宇宙——差別只在中心放在哪裡" font_size 2.6 coordinate_system dome altitude 10 azimuth 180 color 1,0.93,0.8,1 h_align center v_align center persist on duration 2
+wait duration 13
+text name t-cop0 alpha 0 duration 2
+image name two-models alpha 0 duration 2
+image action drop name two-models
+
+image action load name copernicus filename ../media/02-copernicus.png alpha 1 coordinate_system dome altitude 42 azimuth 180 scale 48 persist on duration 3
+wait duration 4
+
+text action load name t-cop1 string "1543 年：把中心從地球搬到太陽——逆行只是視角的錯覺" font_size 2.6 coordinate_system dome altitude 10 azimuth 180 color 1,0.93,0.8,1 h_align center v_align center persist on duration 2
+wait duration 11
+text name t-cop1 alpha 0 duration 2
+
+# ── 飛出太陽系，直接看軌道 ──
+image name copernicus alpha 0 duration 2
+image action drop name copernicus
+flag atmosphere off
+flag landscape off
+flag constellation_lines off
+flag constellation_names off
+flag star_names off
+flag ecliptic_line off
+flag planet_names on
+flag planet_orbits on
+color property planet_orbits color 0.35,0.55,0.9,0.8
+deselect
+
+# 移動到太陽北極上方約 4 AU，俯視整個行星系統
+moveto object Sun lat 82 alt 4AU look_at on duration 12
+wait duration 12
+zoom fov 55 duration 5
+wait duration 5
+
+# ── 快轉：看地球在內圈超前火星 ──
+date utc 2026-12-10T00:00:00
+timerate rate 400000
+wait duration 30
+timerate rate 1
+
+text action load name t-cop2 string "內圈的地球跑得快，每 780 天從火星旁邊超車一次" font_size 2.6 coordinate_system dome altitude 10 azimuth 180 color 1,0.93,0.8,1 h_align center v_align center persist on duration 2
+wait duration 9
+text name t-cop2 alpha 0 duration 2
+
+# ── 疊加逆行幾何示意圖 ──
+image action load name retro-geo filename ../media/03-retrograde-geometry.png alpha 1 coordinate_system dome altitude 42 azimuth 180 scale 50 persist on duration 3
+wait duration 4
+text action load name t-cop3 string "同一個現象，兩種解釋——日心說只需要「地球超前」一件事" font_size 2.6 coordinate_system dome altitude 10 azimuth 180 color 1,0.93,0.8,1 h_align center v_align center persist on duration 2
+wait duration 12
+image name retro-geo alpha 0 duration 2
+text name t-cop3 alpha 0 duration 2
+image action drop name retro-geo
+
+# ── 當時的人為什麼不買帳：恒星視差 ──
+flag planet_orbits off
+flag planet_names off
+image action load name parallax filename ../media/09-parallax.png alpha 1 coordinate_system dome altitude 42 azimuth 180 scale 52 persist on duration 3
+wait duration 4
+
+text action load name t-cop4 string "最大的反駁：地球在動，為什麼看不到恒星的視差？" font_size 2.6 coordinate_system dome altitude 10 azimuth 180 color 1,0.93,0.8,1 h_align center v_align center persist on duration 2
+wait duration 13
+text name t-cop4 alpha 0 duration 2
+image name parallax alpha 0 duration 2
+image action drop name parallax
+wait duration 2

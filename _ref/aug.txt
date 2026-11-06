@@ -1,0 +1,270 @@
+
+
+========== PAGE 1 ==========
+How To Create Your Own Augmented Lesson
+for Digitarium digital planetarium systems
+Version 0.1
+December 8, 2016
+Introduction
+Augmented Lessons are designed to make presenting a live lesson extremely easy through a 
+Digitarium system using the Universal Console interface.  An Augmented Lesson is like a 
+traditional planetarium show script, but will everything you need to do included in the lesson in
+one place.  As you deliver the lesson you can read the narration (or just use it as a reminder), 
+tap media to display these on the dome exactly when needed, and run scripts to control the 
+simulation.
+An Augmented Lesson is used through the Universal Console software interface, which runs 
+in a web browser on a desktop or iPad.  Go to the "Lessons" tab to try out other Augmented 
+Lessons and download more from the Digitalis Community webite at 
+http://Community.DigitalisEducation.com.
+Anatomy of an Augmented Lesson
+Augmented lessons are very basic HTML (HyperText Markup Language) files and directories 
+of related files. HTML is the native format of web pages.  You can edit an existing lesson if the
+license permits, or create your own.  
+Lessons are placed as directories under /lessons/[PUBLISHER] on the user's media master 
+drive. This is then synced to the Digitarium Control Unit internal drive for use.
+Each Lesson is a child directory of the directory corresponding to its Publisher. It is strongly 
+recommended that you create your own unique publisher directory for lessons you create.
+Each Lesson is contained within its own directory. The actual Lesson file is index.html, which 
+is the HTML document.
+Example: The Sun lesson from Digitalis: 
+lessons/digitalis/sun/ <- discrete folder for each lesson (required) 
+lessons/digitalis/sun/index.html <- The lesson file (required)
+lessons/digitalis/sun/media/ <- images, videos, etc. to show on dome (convention)
+lessons/digitalis/sun/scripts/ <-Stratoscript files (convention)
+lessons/digitalis/sun/thumbs/ <- thumbnail images viewed in the HTML (convention)
+1/8
+
+
+========== PAGE 2 ==========
+Augmented Lessons should be distributed as zip archives.  When doing so, please include 
+the top level folders "lessons/PUBLISHER/LESSON_NAME", where PUBLISHER is your 
+name or organization and LESSON_NAME is a unique directory name for your lesson.
+Basics of HTML
+To create your own Augmented Lesson you need to know some basic HTML.  HTML is most 
+easily edited in a text editor for our purposes.  It consists of HTML "tags" and text.  HTML tags
+begin with a "<" and end with a ">".   Many HTML tags have a start tag and a separate end 
+tag.  For example:
+I am <b>bold!</b>
+This makes the text "bold!" bold type.  Note the matching end tag beginning with a "</".
+The most important tag for lessons is the <div> tag.  This is a rectangular division of the page 
+that contains a collection of related content.  Tags can have argument pairs, for example:
+<div class="narration">We begin 3 hours before sunset.</div>
+Note the class argument, which tells the Universal Console the content in this div is narration 
+and should be rendered accordingly.
+Other critical tags are <p> to separate paragraphs, and <img> to include a thumbnail or other 
+image in the page.  Refer to an HTML tutorial online for other useful tags, or use other 
+2/8
+
+
+========== PAGE 3 ==========
+lessons as examples.
+An HTML file has this minimal structure:
+<html>
+<body>
+All of your content.
+</body>
+</html>
+As you create your own HTML file you will be able to preview it (imperfectly) as you work in a 
+web browser. When viewed through the Universal Console some common web page features 
+are disabled, such as scripting or external cascading style sheets (CSS). So you need to keep
+things simple.
+Meta Tags
+HTML meta tags are used as a simple way of embedding data about the lesson in the HTML 
+lesson.  For example:
+<meta name="category" content="Digitalis">
+<meta name="pagename" content="The Sun">
+<meta name="rating" content="9+">
+<meta name="language" content="en">
+Meta tags with the following 'name' attributes are required to display a lesson on the main 
+lesson tab list of lesson:
+category - This is the publisher of the Lesson. Examples: "Digitalis", "Stardust Planetarium". 
+This will show up under the 'Publisher' column of the index.
+pagename - This is the name of the Lesson, displayed under the 'Lesson' column of the 
+index.
+rating - This is the age range in years of the target audience for this lesson, displayed under 
+'Age Range' in the index. Examples: "11+", "4-6"
+language - The locale code corresponding to the language of the lesson. Example: "en", 
+"es_MX"
+The publisher and lesson title combination should be unique to avoid confusion over which 
+lesson is which on the lesson index.
+Images and Thumbnails
+The author of the lesson is responsible for generating the thumbnails, just as they're 
+responsible for generating the full size media files. Thumbnail images are best stored in their 
+own folder, rather than the same folder as their original counterparts so as not to confuse the 
+user browsing the media folder with the UC or Digitarium remote in Media Mode.
+3/8
+
+
+========== PAGE 4 ==========
+A thumbnail file residing at:  lessons/digitalis/sun/thumbs/nebula.png
+Can be referenced in the sun lesson index.html as: 
+<img src="thumbs/nebula.png" data-type="image" data-
+value="media/nebula.png" />
+Note that this tag is defining both the thumbnail and the dome media file.  Typically a 
+thumbnail would be 256x256 pixels in size and a full size media file would be 1024x1024 or 
+larger. Images do not need to be square or any particular resolution. JPEG is a good general 
+image format, and PNG is necessary if you want transparency.
+Interactive Elements
+Interactive elements are images that can be clicked to play media or buttons that play 
+StratoScript commands. The following HTML attributes are required for each interactive 
+element:
+•
+data-type: the type of interaction required. Possible values are:
+◦command: execute a single StratoScript command
+<div class="action">
+      <div data-value="timerate rate 1000" data-transport="false" class="effect" data-
+type="command">Speed up time.</div> </div> 
+◦script: execute a StratoScript
+<div class="action">
+      <div data-value="scripts/zinsun.sts" data-transport="false" class="effect" data-
+type="script">Select and zoom in on the Sun.</div> </div>
+◦audio: play audio track
+◦image: display image on dome
+                  <div class="action">
+                   <img data-value="media/05-heliosphere.gif" data-author="NASA" data-license="CC BY-SA 3.0" data-
+        link="http://commons.wikimedia.org/wiki/File:Heliosphere_drawing.gif" title="Heliosphere"></div>
+◦video: display video on dome
+•
+data-value
+◦In the case of a command, the value is the StratoScript command itself
+<div class="action">
+      <div data-value="timerate rate 1000" data-transport="false" class="effect" data-
+type="command">Speed up time.</div> </div> 
+◦For every other case, the value is a relative path to the media file, for example data-
+value="media/09-Saturn.mpg"
+                   <div class="action">
+                   <img data-value="media/05-heliosphere.gif" data-author="NASA" data-license="CC BY-SA 3.0" data-
+        link="http://commons.wikimedia.org/wiki/File:Heliosphere_drawing.gif" title="Heliosphere"></div>
+4/8
+
+
+========== PAGE 5 ==========
+◦Note: A div class of 'effect' is recommended in order to have a button draw for 
+commands or scripts.
+                <div class="action">
+                   <div data-value="timerate rate 1000" data-transport="false" class="effect" data-       
+       type="command">Speed up time.</div> </div> 
+The following attributes are optional for image or video types. Refer to the image command 
+documentation in the StratoScript Command Reference for parameter values.
+•
+data-coordinate_system: Default is "dome"
+•
+data-xpos: Default 45 degree altitude
+•
+data-ypos: Default 180 degree azimuth
+•
+data-scale: Default ???
+•
+data-rotation: Default 0
+•
+data-clone: Default "false"
+By default transport controls are displayed for audio, videos, and scripts. To hide these use:
+•
+data-transport="false"
+               <div class="action">
+                   <div data-value="timerate rate 1000" data-transport="false" class="effect" data-       
+       type="command">Speed up time.</div> </div> 
+For images, video, and audio the thumbnail <img> tag is the best place to include the data-
+type and data-value attributes.
+<div class="action">
+                   <img data-value="media/05-heliosphere.gif" data-author="NASA" data-license="CC BY-SA 3.0" data-
+        link="http://commons.wikimedia.org/wiki/File:Heliosphere_drawing.gif" title="Heliosphere"></div>
+For scripts and commands, the best option is to use a <div class="effect"> along with the 
+data-* attributes to generate a button.
+Styles
+The following built in styles are supported via HTML class attributes. If you want to create 
+your own styles, you have to use inline styles rather than an external CSS file.
+Class
+Tags
+Style
+narration
+div
+Formats narrative text to left of screen.
+action
+div
+Formats actions to right of screen inside a red border.
+effect
+div
+Formats as a button if contains interactive attributes.
+uc-collapsible
+div
+Make a section collapsible. Div must contain an H2 element 
+for the section title.
+5/8
+
+
+========== PAGE 6 ==========
+ancillary
+div
+Make a section collapsed by default. Must also be class uc-
+collapsible.
+optional-
+section
+div
+Formats as turquoise text and border.
+optional
+p, span
+Formats as turquoise text.
+question
+span
+Formats as gray, bold, italic text.
+hint
+span
+Formats as purple text.
+credits
+table
+Formats with red cell borders.
+center
+???
+Center an element horizontally.
+Examples
+After the initial loading of a Lesson file, any elements with data-type attributes become 
+interactive controls.
+Script example: This would be removed entirely during lesson rendering and replaced with a 
+button. The string "Select and zoom in on the Sun" would be the button text. A start and stop 
+icon would be displayed under the button. 
+<div class="action">
+ <div class="effect" data-type="script" data-value="scripts/sun-
+zoomin.sts">Select and zoom in on the Sun.</div>
+</div>
+Command example. The following command example creates a div that when clicked, tells 
+Nightshade to speed up time. The entire 'effect' div would be replaced with a button. The 
+phrase "timerate rate 300" would be the button text. There are no transport controls displayed
+for a command.
+<div class="effect" data-type="command" data-value="timerate rate 
+300">Speed up time.</div>
+6/8
+
+
+========== PAGE 7 ==========
+Image example: Images don't render transport controls. Touching or clicking the thumbnail 
+toggles the image display on the dome.  The default location is in the direction of the focal 
+point in Nightshade NG or to the South in Legacy.
+<div class="action">
+    <img data-value="thumbs/02-hst.jpg" data-author="NASA" data-license="Public Domain" data-
+link="https://en.wikipedia.org/wiki/Hubble_Space_Telescope#/media/File:Hubble_01.jpg" title="Hubble 
+Space Telescope"> </div>
+    
+Video example:
+<div class='action'>
+  <div class="effect">
+    <img src="thumbs/spacesuits.png" title='Testing Video' data-
+type='video' data-value='media/spacesuits.mp4'></div></div>
+Audio is the same as video, except that you need to be creative about what to use for a 
+thumbnail.
+7/8
+
+
+========== PAGE 8 ==========
+Distributing Augmented Lessons
+We strongly recommend that you zip up everything from the lesson directory up to your single
+lesson. To do this you may need to place it in a temporary directory tree so as not to archive 
+unrelated lessons.
+The advantage to this approach is that the end use can just unzip in the root directory of their 
+master media drive.
+Be sure to include a copyright and license section so that users know what they can do with 
+your lesson.
+Questions?
+The best thing to do is start by reviewing other existing lessons for ideas. See the Digitalis 
+Community website for samples.
+8/8

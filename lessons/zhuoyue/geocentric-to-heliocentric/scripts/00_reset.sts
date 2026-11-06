@@ -1,0 +1,45 @@
+require projection_type fisheye version 24.4.0 release professional
+
+# ============================================================
+# 第 0 幕｜RESET — 回到已知狀態（亦可單獨用來收拾殘局）
+# ============================================================
+configuration action load name default
+timerate rate 1
+date utc 2026-11-20T11:00:00
+flag track_object off
+zoom fov 90 duration 0
+
+# 收掉先前任何殘留的媒體與字幕
+image action clear
+text action clear
+video action clear
+audio action clear
+deselect
+
+# 觀測地點：香港（22.30N, 114.17E），面向南偏東
+set home_planet Earth
+moveto object Earth lat 22.30 lon 114.17 alt 30m land on heading 170 pitch 35 duration 0
+
+# 乾淨的夜空
+flag landscape off
+flag atmosphere on
+flag stars on
+flag star_twinkle on
+set star_twinkle_amount 0.25
+flag milky_way on
+set milky_way_intensity 0.9
+flag planet_orbits off
+flag planet_names on
+flag constellation_lines on
+flag constellation_names on
+flag star_names on
+flag ecliptic_line on
+flag cardinal_points off
+flag azimuthal_grid off
+color property constellation_lines color 0.28,0.38,0.62,0.6
+color property constellation_names color 0.55,0.68,0.95,0.85
+color property star_names color 0.72,0.78,0.90,0.75
+color property planet_names color 1,0.82,0.55,1.0
+color property ecliptic_line color 0.92,0.72,0.25,0.7
+set label_scale 0.85
+wait duration 1

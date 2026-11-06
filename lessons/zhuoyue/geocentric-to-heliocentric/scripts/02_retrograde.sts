@@ -1,0 +1,151 @@
+require projection_type fisheye version 24.4.0 release professional
+
+# ============================================================
+# 第 2 幕｜火星逆行 — 地心說必須解釋的難題
+# 技巧：以「恆星日」為步長推進，星空保持在原位，
+#       於是只看得到行星相對恒星的移動。
+# ============================================================
+
+# 火星 2027-02-19 衝日前後（逆行約 2026-12-30 至 2027-03-11）
+date utc 2026-12-05T16:00:00
+deselect
+select object Mars pointer off
+flag track_object on
+zoom fov 32 duration 5
+wait duration 5
+
+text action load name t-retro string "盯著火星：它大部分時間向東走，但有兩個多月會倒退" font_size 2.4 coordinate_system dome altitude 12 azimuth 180 color 1,0.93,0.8,1 h_align center v_align center persist on duration 2
+wait duration 8
+text name t-retro alpha 0 duration 2
+
+# ── 每步 2 個恒星日，共 60 步 ≈ 120 天 ──
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+date sidereal 2
+wait duration 0.35
+
+# ── 收尾：拉遠看整體 ──
+flag track_object off
+deselect
+zoom fov 85 duration 6
+wait duration 6
+timerate rate 1
+wait duration 3

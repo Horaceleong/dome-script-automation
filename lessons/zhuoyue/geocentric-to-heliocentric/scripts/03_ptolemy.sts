@@ -1,0 +1,38 @@
+require projection_type fisheye version 24.4.0 release professional
+
+# ============================================================
+# 第 3 幕｜托勒密的解答 — 本輪疊在均輪上＋完整的地心宇宙
+# ============================================================
+
+# 把星空調暗，讓示意圖突出
+flag constellation_lines off
+flag constellation_names off
+flag star_names off
+flag milky_way off
+set milky_way_intensity 0.15
+
+image action load name ptolemy filename ../media/01-ptolemy.png alpha 1 coordinate_system dome altitude 42 azimuth 180 scale 48 persist on duration 3
+wait duration 4
+
+text action load name t-ptol1 string "西元 150 年：用「圓套圓」就能算出行星的位置" font_size 2.6 coordinate_system dome altitude 10 azimuth 180 color 1,0.93,0.8,1 h_align center v_align center persist on duration 2
+wait duration 10
+text name t-ptol1 alpha 0 duration 2
+
+text action load name t-ptol2 string "誤差只有 1–2°——這不是愚蠢的模型，是好用的模型" font_size 2.6 coordinate_system dome altitude 10 azimuth 180 color 1,0.93,0.8,1 h_align center v_align center persist on duration 2
+wait duration 10
+text name t-ptol2 alpha 0 duration 2
+
+# ── 換上完整的地心宇宙圖 ──
+image name ptolemy alpha 0 duration 2
+image action load name geo-cosmos filename ../media/07-geocentric-cosmos.png alpha 1 coordinate_system dome altitude 42 azimuth 180 scale 48 persist on duration 3
+wait duration 4
+
+text action load name t-ptol3 string "在托勒密的宇宙裡：月球天到恒星期，一切都繞地球" font_size 2.6 coordinate_system dome altitude 10 azimuth 180 color 1,0.93,0.8,1 h_align center v_align center persist on duration 2
+wait duration 12
+text name t-ptol3 alpha 0 duration 2
+image name geo-cosmos alpha 0 duration 2
+
+# ── 清理自己載入的媒體 ──
+image action drop name ptolemy
+image action drop name geo-cosmos
+wait duration 2

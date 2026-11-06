@@ -1,0 +1,43 @@
+require projection_type fisheye version 24.4.0 release professional
+
+# ============================================================
+# 第 5 幕｜開普勒 — 正圓不夠圓：橢圓與等面積
+# ============================================================
+
+# 從太陽北極上方 1.6 AU 俯視內行星（水星偏心率 0.206，最明顯）
+moveto object Sun lat 80 alt 1.6AU look_at on duration 10
+wait duration 10
+flag planet_orbits on
+flag planet_names on
+color property planet_orbits color 0.35,0.55,0.9,0.8
+zoom fov 60 duration 5
+wait duration 5
+
+select object Mercury pointer on
+zoom fov 45 duration 5
+wait duration 5
+
+text action load name t-k1 string "第谷留下 20 年、精度 1–2 角分的觀測紀錄" font_size 2.6 coordinate_system dome altitude 10 azimuth 180 color 1,0.93,0.8,1 h_align center v_align center persist on duration 2
+wait duration 9
+text name t-k1 alpha 0 duration 2
+
+# ── 快轉幾圈：水星在近日點明顯變快 ──
+timerate rate 2000000
+wait duration 12
+timerate rate 1
+wait duration 1
+
+text action load name t-k2 string "橢圓偏心率只有 0.206，但差 8 角分就得放棄正圓" font_size 2.6 coordinate_system dome altitude 10 azimuth 180 color 1,0.93,0.8,1 h_align center v_align center persist on duration 2
+wait duration 9
+text name t-k2 alpha 0 duration 2
+
+# ── 疊加橢圓與等面積示意圖 ──
+image action load name kepler filename ../media/04-kepler.png alpha 1 coordinate_system dome altitude 42 azimuth 180 scale 50 persist on duration 3
+wait duration 4
+text action load name t-k3 string "同樣的時間，掃過同樣的面積——離太陽近就跑得快" font_size 2.6 coordinate_system dome altitude 10 azimuth 180 color 1,0.93,0.8,1 h_align center v_align center persist on duration 2
+wait duration 12
+image name kepler alpha 0 duration 2
+text name t-k3 alpha 0 duration 2
+image action drop name kepler
+deselect
+wait duration 2

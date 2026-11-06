@@ -1,0 +1,32 @@
+require projection_type fisheye version 24.4.0 release professional
+
+# ============================================================
+# 第 7 幕｜尾聲 — 回到星空：日心也不是終點
+# ============================================================
+
+flag planet_orbits off
+flag planet_names off
+flag milky_way on
+set milky_way_intensity 1.0
+flag star_twinkle on
+
+# 回到香港的夜空
+moveto object Earth lat 22.30 lon 114.17 alt 30m land on heading 180 pitch 30 duration 12
+wait duration 12
+zoom fov 90 duration 5
+wait duration 5
+
+date utc 2026-11-20T13:00:00
+timerate rate 900
+wait duration 14
+timerate rate 1
+
+text action load name t-end1 string "太陽也不是中心——它帶著我們繞銀河系中心轉，2.3 億年一圈" font_size 2.8 coordinate_system dome altitude 14 azimuth 180 color 1,0.93,0.8,1 h_align center v_align center persist on duration 3
+wait duration 13
+text name t-end1 alpha 0 duration 3
+
+text action load name t-end2 string "科學不是換掉一個答案，是換掉一個「問問題的位置」" font_size 2.8 coordinate_system dome altitude 14 azimuth 180 color 1,0.93,0.8,1 h_align center v_align center persist on duration 3
+wait duration 13
+text name t-end2 alpha 0 duration 3
+
+wait duration 3

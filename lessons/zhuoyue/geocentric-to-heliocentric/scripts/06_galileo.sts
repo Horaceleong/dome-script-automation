@@ -1,0 +1,43 @@
+require projection_type fisheye version 24.4.0 release professional
+
+# ============================================================
+# 第 6 幕｜伽利略的望遠鏡 — 木星衛星、金星相位，以及歷史收束
+# ============================================================
+
+deselect
+
+# ── 木星與四大衛星 ──
+select object Jupiter pointer off
+zoom auto in duration 6
+wait duration 6
+timerate rate 30000
+wait duration 16
+timerate rate 1
+
+text action load name t-g1 string "1610 年：四顆小星繞著木星轉——不是所有東西都繞地球" font_size 2.6 coordinate_system dome altitude 10 azimuth 180 color 1,0.93,0.8,1 h_align center v_align center persist on duration 2
+wait duration 10
+text name t-g1 alpha 0 duration 2
+
+# ── 金星相位：回到地球附近 ──
+flag track_object off
+deselect
+moveto object Earth lat 22.30 lon 114.17 alt 60000km land off look_at on duration 10
+wait duration 10
+
+image action load name venus filename ../media/05-venus-phases.png alpha 1 coordinate_system dome altitude 42 azimuth 180 scale 50 persist on duration 3
+wait duration 4
+text action load name t-g2 string "金星有完整相位，而且越細越大——它繞的是太陽" font_size 2.6 coordinate_system dome altitude 10 azimuth 180 color 1,0.93,0.8,1 h_align center v_align center persist on duration 2
+wait duration 12
+image name venus alpha 0 duration 2
+text name t-g2 alpha 0 duration 2
+image action drop name venus
+
+# ── 歷史時間線收束 ──
+image action load name timeline filename ../media/06-timeline.png alpha 1 coordinate_system dome altitude 42 azimuth 180 scale 50 persist on duration 3
+wait duration 4
+text action load name t-g3 string "托勒密 → 哥白尼 → 第谷 → 開普勒 → 伽利略 → 牛頓" font_size 2.6 coordinate_system dome altitude 10 azimuth 180 color 1,0.93,0.8,1 h_align center v_align center persist on duration 2
+wait duration 14
+image name timeline alpha 0 duration 2
+text name t-g3 alpha 0 duration 2
+image action drop name timeline
+wait duration 2

@@ -1,0 +1,24 @@
+require projection_type fisheye version 24.4.0 release professional
+
+# ============================================================
+# 第 1 幕｜天球 — 讓觀眾先「住進」地心說的直覺
+# 從地球看：星空像一個殼，繞著同一個點轉。
+# ============================================================
+
+# 整片天空一起轉：1 秒 ≈ 15 分鐘的模擬時間
+timerate rate 900
+wait duration 16
+timerate rate 1
+
+text action load name t-sphere string "整個星空像一個球殼，繞著同一個點轉" font_size 2.8 coordinate_system dome altitude 14 azimuth 180 color 1,0.93,0.8,1 h_align center v_align center persist on duration 2
+wait duration 9
+text name t-sphere alpha 0 duration 2
+wait duration 2
+
+# 轉到北天極：天球繞著北極星轉
+moveto heading 0 pitch 22.3 duration 6
+wait duration 6
+timerate rate 900
+wait duration 12
+timerate rate 1
+wait duration 3
